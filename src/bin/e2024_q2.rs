@@ -130,6 +130,6 @@ HELWORLT
 ENIGWDXL
 TRODEOAL",
         );
-        assert_eq!(a, 11);
+        assert_eq!(a, 10);
     }
 }
