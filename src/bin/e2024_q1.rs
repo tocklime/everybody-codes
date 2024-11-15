@@ -23,8 +23,7 @@ fn solve<const GROUP_SIZE: usize>(input: &str) -> u32 {
             let (total, count) = x.map(potions_required).fold((0, 0), |a, e| {
                 (a.0 + e.unwrap_or_default(), a.1 + u32::from(e.is_some()))
             });
-            assert!(count > 0);
-            total + (count - 1) * count
+            total + count.saturating_sub(1) * count
         })
         .sum()
 }
