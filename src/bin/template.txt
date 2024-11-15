@@ -1,0 +1,21 @@
+const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_qXX_p1.txt");
+// const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_qXX_p2.txt");
+// const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_qXX_p3.txt");
+
+fn main() {
+    println!("P1: {}", solve::<1>(P1_INPUT));
+    // println!("P2: {}", solve::<2>(P2_INPUT));
+    // println!("P3: {}", solve::<3>(P3_INPUT));
+}
+fn solve<const PART: usize>(input: &str) -> usize {
+}
+
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    const EG1 : &str = "";
+    #[test]
+    fn p1_example() {
+    }
+}
