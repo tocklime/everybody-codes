@@ -8,6 +8,7 @@ fn main() {
     // println!("P3: {}", solve::<3>(P3_INPUT));
 }
 fn solve<const PART: usize>(input: &str) -> usize {
+    0
 }
 
 
@@ -17,5 +18,6 @@ mod test {
     const EG1 : &str = "";
     #[test]
     fn p1_example() {
+        assert_eq!(solve::<1>(EG1), 0);
     }
 }
