@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::{collections::{HashMap, HashSet}, iter};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q05_p1.txt");
 const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q05_p2.txt");
@@ -13,37 +13,27 @@ fn solve<const PART: usize>(input: &str) -> usize {
     let mut d = Dance::new(input);
     match PART {
         1 =>  {    
-            for _ in 0..10 {
-                d.do_round();
-            }
-            d.shout()
+            iter::from_fn(|| Some(d.do_round())).nth(9).unwrap()
         }
         2 => {
             let mut nums : HashMap<usize,usize> = HashMap::new();
-            for round in 1.. {
-                d.do_round();
-                let x = nums.entry(d.shout()).or_default();
+            (1..).map(|round| {
+                let shout = d.do_round();
+                let x = nums.entry(shout).or_default();
                 *x += 1;
                 if *x == 2024 {
-                    return round * d.shout()
+                    Some(round * shout)
+                } else {
+                    None
                 }
-            }
-
-            0
+            }).find_map(|x| x).unwrap()
         }
         3 => {
             let mut seen = HashSet::new();
-            let mut max_heard = 0;
-            for _ in 1.. {
-                d.do_round();
-                let shout = d.shout();
-                max_heard = max_heard.max(shout);
-                if seen.contains(&d) {
-                    return max_heard;
-                }
-                seen.insert(d.clone());
-            }
-            0
+            iter::from_fn(|| {
+                let shout = d.do_round();
+                seen.insert(d.clone()).then_some(shout)
+            }).max().unwrap()
         }
         _ => unimplemented!()
     }
@@ -95,7 +85,7 @@ impl Dance {
     pub fn shout(&self) -> usize {
         self.columns.iter().fold(0, |a,e| (bounding_power_of_ten(e[0]))*a+e[0])
     }
-    pub fn do_round(&mut self) {
+    pub fn do_round(&mut self) -> usize {
         let person = self.columns[self.next_column_to_dance].remove(0);
         let new_column = (self.next_column_to_dance + 1) % self.columns.len();
         let next_col = &mut self.columns[new_column];
@@ -105,6 +95,7 @@ impl Dance {
         }
         next_col.insert(insertion_point, person);
         self.next_column_to_dance = new_column;
+        self.shout()
     }
 }
 
