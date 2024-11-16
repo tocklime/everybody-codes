@@ -61,3 +61,39 @@ pub unsafe fn slice_get_mut_two_unchecked<T>(
     let two = &mut *ptr.add(index1);
     (one, two)
 }
+
+pub struct PermutationBag<'a, T> {
+    available: &'a [(T, usize)],
+    stack: Vec<Vec<usize>>,
+    k: usize,
+}
+impl<'a, T> PermutationBag<'a, T> {
+    pub fn new(available: &'a [(T, usize)], k: usize) -> Self {
+        assert!(available.len() > 0);
+        assert!(available[0].1 > 0);
+        let stack = (0..available.len()).map(|x| vec![x]).collect();
+        Self {
+            available,
+            stack,
+            k,
+        }
+    }
+}
+impl<'a, T> Iterator for PermutationBag<'a, T> {
+    type Item = Vec<&'a T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        while let Some(path) = self.stack.pop() {
+            if path.len() == self.k {
+                return Some(path.into_iter().map(|ix| &self.available[ix].0).collect());
+            }
+            let mut counts : Vec<usize> = vec![0;self.available.len()];
+            for &item in &path {
+                counts[item] +=1;
+            }
+            let choices = self.available.iter().enumerate().filter_map(|(ix,(_,n))| (*n > counts[ix]).then_some({let mut new = path.clone(); new.push(ix); new}));
+            self.stack.extend(choices);
+        }
+        None
+    }
+}
