@@ -69,7 +69,7 @@ pub struct PermutationBag<'a, T> {
 }
 impl<'a, T> PermutationBag<'a, T> {
     pub fn new(available: &'a [(T, usize)], k: usize) -> Self {
-        assert!(available.len() > 0);
+        assert!(!available.is_empty());
         assert!(available[0].1 > 0);
         let stack = (0..available.len()).map(|x| vec![x]).collect();
         Self {

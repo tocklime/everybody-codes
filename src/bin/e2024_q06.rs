@@ -28,16 +28,14 @@ fn solve<const PART: usize>(input: &str) -> String {
         new_path.push(node);
         if node == "@" {
             paths.entry(new_path.len()).or_default().push(new_path);
-        } else {
-            if let Some(children) = tree.get(node) {
-                to_explore.extend(children.iter().map(|x| {
-                    if new_path.contains(&&x[..]) {
-                        panic!("path {:?} already has {}", new_path, x);
-                    } else {
-                        (&x[..], new_path.clone())
-                    }
-                }));
-            }
+        } else if let Some(children) = tree.get(node) {
+            to_explore.extend(children.iter().map(|x| {
+                if new_path.contains(&&x[..]) {
+                    panic!("path {:?} already has {}", new_path, x);
+                } else {
+                    (&x[..], new_path.clone())
+                }
+            }));
         }
     }
     let best = &paths.values().find(|x| x.len() == 1).unwrap()[0];
@@ -45,7 +43,7 @@ fn solve<const PART: usize>(input: &str) -> String {
         1 => best.join(""),
         2 | 3 => best
             .iter()
-            .map(|x| x.chars().nth(0).unwrap())
+            .map(|x| x.chars().next().unwrap())
             .collect(),
         _ => unimplemented!(),
     }

@@ -41,7 +41,7 @@ fn solve3(str: &str) -> usize {
         .split(",")
         .flat_map(|c| {
             [
-                c.as_bytes().iter().cloned().collect::<Vec<u8>>(),
+                c.as_bytes().to_vec(),
                 c.as_bytes().iter().cloned().rev().collect::<Vec<u8>>(),
             ]
         })
@@ -49,7 +49,7 @@ fn solve3(str: &str) -> usize {
     let grid = rest
         .trim()
         .lines()
-        .map(|x| x.as_bytes().into_iter().cloned().collect::<Vec<u8>>())
+        .map(|x| x.as_bytes().to_vec())
         .collect::<Vec<Vec<u8>>>();
     let mut highlight_char_ixs = HashSet::new();
     for r in 0..grid.len() {
@@ -78,12 +78,11 @@ fn solve3(str: &str) -> usize {
 }
 #[allow(dead_code)]
 fn print_grid(grid: &[Vec<u8>], highlighted: &HashSet<(usize,usize)>) {
-    for r in 0..grid.len() {
-        let row = &grid[r];
-        for c in 0..row.len() {
-            let ch : char = char::from(row[c]);
+    for (r,row) in grid.iter().enumerate() {
+        for (c,&byte) in row.iter().enumerate() {
+            let ch : char = char::from(byte);
             if highlighted.contains(&(r,c)) {
-                print!("{}", ansi_term::Color::Red.paint(ch.to_string()).to_string());
+                print!("{}", ansi_term::Color::Red.paint(ch.to_string()));
             } else {
                 print!("{}", ch);
             }

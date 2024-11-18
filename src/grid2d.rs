@@ -264,7 +264,7 @@ impl<T> Grid2d<T> {
         let w = self.size.x;
         &self.data[y * w..(y + 1) * w]
     }
-    #[must_use]
+
     pub fn get_col(&self, x: usize) -> impl Iterator<Item = &T> {
         let w = self.size.x;
         self.data.iter().skip(x).step_by(w)

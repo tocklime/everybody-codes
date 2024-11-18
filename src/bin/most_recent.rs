@@ -16,7 +16,7 @@ fn main() {
                     }
                 }
             }
-            return acc;
+            acc
         })
         .unwrap()
         .unwrap();

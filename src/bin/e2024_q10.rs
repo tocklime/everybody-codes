@@ -141,19 +141,13 @@ fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {
                         grid[row_start + P::new(1, 0)],
                         grid[row_start + P::new(6, 0)],
                         grid[row_start + P::new(7, 0)],
-                    ]
-                    .iter()
-                    .cloned()
-                    .collect();
+                    ].to_vec();
                     let col_given: Vec<char> = [
                         grid[col_start],
                         grid[col_start + P::new(0, 1)],
                         grid[col_start + P::new(0, 6)],
                         grid[col_start + P::new(0, 7)],
-                    ]
-                    .iter()
-                    .cloned()
-                    .collect();
+                    ].to_vec();
                     let intersect= lone_intersection(&row_given, &col_given);
                     if intersect.is_some() && intersect.unwrap() != '?' {
                         place_character(grid, base, Point::new(2 + col, 2 + row), intersect.unwrap());

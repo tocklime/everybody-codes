@@ -32,17 +32,20 @@ fn main() {
 
 fn solve(input: &str) -> String {
     let track = ['S'];
-    let foo = input
+    input
         .lines()
         .map(|l| {
             let (name, instructions) = l.split_once(":").unwrap();
-            let instructions : Vec<char> = instructions.split(",").map(|x| x.chars().next().unwrap()).collect();
+            let instructions: Vec<char> = instructions
+                .split(",")
+                .map(|x| x.chars().next().unwrap())
+                .collect();
             let gathered = run_race(&instructions, &track, 10);
             (name, gathered)
         })
         .sorted_by(|a, b| b.1.cmp(&a.1))
-        .collect::<Vec<_>>();
-    foo.into_iter().map(|x| x.0).collect()
+        .map(|x| x.0)
+        .collect()
 }
 
 fn make_track(track: &str) -> Vec<char> {
@@ -82,11 +85,11 @@ fn make_track(track: &str) -> Vec<char> {
 fn solve2(input: &str, track: &str) -> String {
     let track = make_track(track);
 
-    let foo = input
+    input
         .lines()
         .map(|l| {
             let (name, instructions) = l.split_once(":").unwrap();
-            let instructions : Vec<char> = instructions
+            let instructions: Vec<char> = instructions
                 .split(",")
                 .map(|x| x.chars().next().unwrap())
                 .collect();
@@ -94,8 +97,8 @@ fn solve2(input: &str, track: &str) -> String {
             (name, gathered)
         })
         .sorted_by(|a, b| b.1.cmp(&a.1))
-        .collect::<Vec<_>>();
-    foo.into_iter().map(|x| x.0).collect()
+        .map(|x| x.0)
+        .collect()
 }
 
 //4 digit, not start 4 or 5.
@@ -134,7 +137,7 @@ fn solve3(input: &str, track: &str) -> usize {
     .collect::<Vec<char>>();
     let rival_score = {
         let (_name, instructions) = input.split_once(":").unwrap();
-        let instructions : Vec<char> = instructions
+        let instructions: Vec<char> = instructions
             .split(",")
             .map(|x| x.chars().next().unwrap())
             .collect();
@@ -144,7 +147,7 @@ fn solve3(input: &str, track: &str) -> usize {
 
     PermutationBag::new(&[('+', 5), ('-', 3), ('=', 3)], 11)
         .filter(|p| {
-            let p : Vec<char> = p.iter().map(|x| **x).collect();
+            let p: Vec<char> = p.iter().map(|x| **x).collect();
             run_race(&p, &track_iter, track_iter.len() * 2024) > rival_score
         })
         .count()
@@ -161,16 +164,16 @@ fn run_race(plan: &[char], track: &[char], length: usize) -> u64 {
     let mut last_delta_delta = 0;
     loop {
         if pos == length {
-            break gathered
+            break gathered;
         }
-        match (track[pos%track.len()], plan[pos%plan.len()]) {
+        match (track[pos % track.len()], plan[pos % plan.len()]) {
             ('-', _) | ('=', '-') | ('S', '-') => power = power.saturating_sub(1),
             ('+', _) | ('=', '+') | ('S', '+') => power += 1,
             _ => (),
         }
         gathered += power;
         pos += 1;
-        if pos%track.len() == 0 && pos%plan.len() == 0 {
+        if pos % track.len() == 0 && pos % plan.len() == 0 {
             let delta = gathered - last_report;
             let delta_delta = delta - last_delta;
             let power_delta = power - last_power;

@@ -68,7 +68,7 @@ impl Dp {
                 let a = a_1 + add;
                 let b = target - a;
                 if a.abs_diff(b) <= 100 {
-                    self.get(a as usize) + self.get(b as usize)
+                    self.get(a) + self.get(b)
                 } else {
                     u32::MAX
                 }
