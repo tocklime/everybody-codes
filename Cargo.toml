@@ -15,4 +15,10 @@ num_enum = "0.7.3"
 parse-display = "0.10.0"
 pathfinding = "4.11.0"
 platform-dirs = "0.3.0"
+proptest = "1.5.0"
+quickcheck = "1.0.3"
+quickcheck_macros = "1.0.0"
 reformation = "0.5.3"
+
+[profile.release]
+debug = true

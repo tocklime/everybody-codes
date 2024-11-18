@@ -102,7 +102,22 @@ impl<T: PartialEq<T>> Grid2d<T> {
         }
     }
 }
+impl<T: Copy> Grid2d<T> {
+    pub fn sub_grid_copied<TC1,TC2>(&self, base: TC1, size: TC2) -> Grid2d<T> 
+    where TC1 : Into<Coord>, TC2: Into<Coord>
+    {
+        let base = base.into();
+        Grid2d::from_fn(size, |x| self[base + x])
+    }
+}
 impl<T> Grid2d<T> {
+    pub fn sub_grid<TC1,TC2>(&self, base: TC1, size: TC2) -> Grid2d<&T> 
+    where TC1 : Into<Coord>, TC2: Into<Coord>
+    {
+        let base = base.into();
+        Grid2d::from_fn(size, |x| &self[base + x])
+    }
+
     pub fn iter_mut(&mut self) -> std::slice::IterMut<'_, T> {
         self.data.iter_mut()
     }
@@ -248,6 +263,11 @@ impl<T> Grid2d<T> {
     pub fn get_row(&self, y: usize) -> &[T] {
         let w = self.size.x;
         &self.data[y * w..(y + 1) * w]
+    }
+    #[must_use]
+    pub fn get_col(&self, x: usize) -> impl Iterator<Item = &T> {
+        let w = self.size.x;
+        self.data.iter().skip(x).step_by(w)
     }
     #[must_use]
     pub fn relative_lookup(&self, p: Coord, relative: ICoord) -> Option<&T> {

@@ -27,6 +27,8 @@
               extensions = ["rust-src"];
             })
             bacon
+            hyperfine
+            cargo-flamegraph
           ];
 
           shellHook = ''
