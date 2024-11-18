@@ -103,16 +103,20 @@ impl<T: PartialEq<T>> Grid2d<T> {
     }
 }
 impl<T: Copy> Grid2d<T> {
-    pub fn sub_grid_copied<TC1,TC2>(&self, base: TC1, size: TC2) -> Grid2d<T> 
-    where TC1 : Into<Coord>, TC2: Into<Coord>
+    pub fn sub_grid_copied<TC1, TC2>(&self, base: TC1, size: TC2) -> Grid2d<T>
+    where
+        TC1: Into<Coord>,
+        TC2: Into<Coord>,
     {
         let base = base.into();
         Grid2d::from_fn(size, |x| self[base + x])
     }
 }
 impl<T> Grid2d<T> {
-    pub fn sub_grid<TC1,TC2>(&self, base: TC1, size: TC2) -> Grid2d<&T> 
-    where TC1 : Into<Coord>, TC2: Into<Coord>
+    pub fn sub_grid<TC1, TC2>(&self, base: TC1, size: TC2) -> Grid2d<&T>
+    where
+        TC1: Into<Coord>,
+        TC2: Into<Coord>,
     {
         let base = base.into();
         Grid2d::from_fn(size, |x| &self[base + x])
@@ -238,7 +242,7 @@ impl<T> Grid2d<T> {
         .filter(move |x: &Coord| x.y < s.y && x.x < s.x)
     }
     pub fn is_edge(&self, p: Coord) -> bool {
-        p.x == 0 || p.y == 0 || p.x == self.size.x-1 || p.y == self.size.y-1
+        p.x == 0 || p.y == 0 || p.x == self.size.x - 1 || p.y == self.size.y - 1
     }
 
     /// Returns all values in the grid by taking steps of `relative` from `start`.

@@ -1,4 +1,7 @@
-use std::{collections::{HashMap, HashSet}, iter};
+use std::{
+    collections::{HashMap, HashSet},
+    iter,
+};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q05_p1.txt");
 const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q05_p2.txt");
@@ -12,43 +15,46 @@ fn main() {
 fn solve<const PART: usize>(input: &str) -> usize {
     let mut d = Dance::new(input);
     match PART {
-        1 =>  {    
-            iter::from_fn(|| Some(d.do_round())).nth(9).unwrap()
-        }
+        1 => iter::from_fn(|| Some(d.do_round())).nth(9).unwrap(),
         2 => {
-            let mut nums : HashMap<usize,usize> = HashMap::new();
-            (1..).map(|round| {
-                let shout = d.do_round();
-                let x = nums.entry(shout).or_default();
-                *x += 1;
-                if *x == 2024 {
-                    Some(round * shout)
-                } else {
-                    None
-                }
-            }).find_map(|x| x).unwrap()
+            let mut nums: HashMap<usize, usize> = HashMap::new();
+            (1..)
+                .map(|round| {
+                    let shout = d.do_round();
+                    let x = nums.entry(shout).or_default();
+                    *x += 1;
+                    if *x == 2024 {
+                        Some(round * shout)
+                    } else {
+                        None
+                    }
+                })
+                .find_map(|x| x)
+                .unwrap()
         }
         3 => {
             let mut seen = HashSet::new();
             iter::from_fn(|| {
                 let shout = d.do_round();
                 seen.insert(d.clone()).then_some(shout)
-            }).max().unwrap()
+            })
+            .max()
+            .unwrap()
         }
-        _ => unimplemented!()
+        _ => unimplemented!(),
     }
 }
 
-#[derive(Debug,Clone,Hash,PartialEq,Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 struct Dance {
     columns: Vec<Vec<usize>>,
-    next_column_to_dance: usize
+    next_column_to_dance: usize,
 }
 
 fn bounding_power_of_ten(mut n: usize) -> usize {
     let mut ans = 10;
-    while n > 9  {
-        ans *=10;
+    while n > 9 {
+        ans *= 10;
         n /= 10;
     }
     ans
@@ -65,7 +71,10 @@ impl Dance {
                 columns[ix].push(p.parse().unwrap())
             }
         }
-        Self { columns, next_column_to_dance: 0 }
+        Self {
+            columns,
+            next_column_to_dance: 0,
+        }
     }
     #[allow(dead_code)]
     pub fn draw(&self) {
@@ -83,14 +92,16 @@ impl Dance {
         println!();
     }
     pub fn shout(&self) -> usize {
-        self.columns.iter().fold(0, |a,e| (bounding_power_of_ten(e[0]))*a+e[0])
+        self.columns
+            .iter()
+            .fold(0, |a, e| (bounding_power_of_ten(e[0])) * a + e[0])
     }
     pub fn do_round(&mut self) -> usize {
         let person = self.columns[self.next_column_to_dance].remove(0);
         let new_column = (self.next_column_to_dance + 1) % self.columns.len();
         let next_col = &mut self.columns[new_column];
-        let mut insertion_point = (person-1) % (next_col.len() * 2);
-        if insertion_point > next_col.len()  {
+        let mut insertion_point = (person - 1) % (next_col.len() * 2);
+        if insertion_point > next_col.len() {
             insertion_point = (2 * next_col.len()) - insertion_point;
         }
         next_col.insert(insertion_point, person);
@@ -104,16 +115,18 @@ mod test {
     use std::iter;
 
     use super::*;
-    const EG1 : &str = "2 3 4 5\n3 4 5 2\n4 5 2 3\n5 2 3 4";
-    const EG2 : &str = "2 3 4 5\n6 7 8 9";
-    const CORRECT_SHOUTS : [usize; 10] = [ 3345, 3245, 3255, 3252, 4252, 4452, 4422, 4423, 2423, 2323];
+    const EG1: &str = "2 3 4 5\n3 4 5 2\n4 5 2 3\n5 2 3 4";
+    const EG2: &str = "2 3 4 5\n6 7 8 9";
+    const CORRECT_SHOUTS: [usize; 10] =
+        [3345, 3245, 3255, 3252, 4252, 4452, 4422, 4423, 2423, 2323];
     #[test]
     fn p1_example() {
         let mut d = Dance::new(EG1);
         let our_shouts = iter::from_fn(|| {
             d.do_round();
-            Some(d.shout())}
-        ).take(CORRECT_SHOUTS.len());
+            Some(d.shout())
+        })
+        .take(CORRECT_SHOUTS.len());
         assert!(our_shouts.eq(CORRECT_SHOUTS.iter().cloned()));
         assert_eq!(solve::<1>(EG1), 2323);
     }

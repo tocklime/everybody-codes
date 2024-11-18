@@ -41,10 +41,7 @@ fn solve<const PART: usize>(input: &str) -> String {
     let best = &paths.values().find(|x| x.len() == 1).unwrap()[0];
     match PART {
         1 => best.join(""),
-        2 | 3 => best
-            .iter()
-            .map(|x| x.chars().next().unwrap())
-            .collect(),
+        2 | 3 => best.iter().map(|x| x.chars().next().unwrap()).collect(),
         _ => unimplemented!(),
     }
 }

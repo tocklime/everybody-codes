@@ -36,7 +36,9 @@ fn lone_intersection(a: &[char], b: &[char]) -> Option<char> {
         for c_b in b {
             if c_a == c_b {
                 match found {
-                    Some(x) if &x != c_a => {return None;}
+                    Some(x) if &x != c_a => {
+                        return None;
+                    }
                     _ => (),
                 }
                 found = Some(*c_a);
@@ -49,7 +51,7 @@ fn vec_difference(a: &[char], b: &[char]) -> Vec<char> {
     let mut ans = Vec::new();
     let mut to_clear = b.to_vec();
     for c_a in a {
-        if let Some((ix,_)) = to_clear.iter().find_position(|x| *x == c_a) {
+        if let Some((ix, _)) = to_clear.iter().find_position(|x| *x == c_a) {
             to_clear.swap_remove(ix);
         } else {
             ans.push(*c_a);
@@ -95,7 +97,7 @@ fn place_character(
             Point::new(1, 0),
         )
         .take(8)
-        .map(|x| (x.0,*x.1))
+        .map(|x| (x.0, *x.1))
         .collect_vec();
 
     if row_qs.iter().all(|x| x.1 != value) {
@@ -109,7 +111,7 @@ fn place_character(
             Point::new(0, 1),
         )
         .take(8)
-        .map(|x| (x.0,*x.1))
+        .map(|x| (x.0, *x.1))
         .collect_vec();
     if col_qs.iter().all(|x| x.1 != value) {
         if let Some(p) = col_qs.iter().find(|x| x.1 == '?') {
@@ -141,16 +143,23 @@ fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {
                         grid[row_start + P::new(1, 0)],
                         grid[row_start + P::new(6, 0)],
                         grid[row_start + P::new(7, 0)],
-                    ].to_vec();
+                    ]
+                    .to_vec();
                     let col_given: Vec<char> = [
                         grid[col_start],
                         grid[col_start + P::new(0, 1)],
                         grid[col_start + P::new(0, 6)],
                         grid[col_start + P::new(0, 7)],
-                    ].to_vec();
-                    let intersect= lone_intersection(&row_given, &col_given);
+                    ]
+                    .to_vec();
+                    let intersect = lone_intersection(&row_given, &col_given);
                     if intersect.is_some() && intersect.unwrap() != '?' {
-                        place_character(grid, base, Point::new(2 + col, 2 + row), intersect.unwrap());
+                        place_character(
+                            grid,
+                            base,
+                            Point::new(2 + col, 2 + row),
+                            intersect.unwrap(),
+                        );
                         ans.push(intersect.unwrap());
                         keep_going = true;
                         any_progress_at_all = true;
@@ -165,7 +174,7 @@ fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {
                             .take(4)
                             .map(|x| *x.1)
                             .collect();
-                        let left_on_row = vec_difference(&row_given,&row_known);
+                        let left_on_row = vec_difference(&row_given, &row_known);
                         if left_on_row.len() == 1 && left_on_row[0] != '?' {
                             place_character(
                                 grid,
@@ -214,7 +223,7 @@ fn solve2(input: &str) -> usize {
 }
 fn solve3(input: &str) -> usize {
     let mut grid = Grid2d::from_str(input, |x| x);
-    let mut keep_going =true;
+    let mut keep_going = true;
     while keep_going {
         keep_going = false;
         for row in 0..10 {

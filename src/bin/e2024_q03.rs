@@ -34,9 +34,9 @@ fn solve<const PART: usize>(input: &str) -> usize {
     });
     loop {
         let (n, count) = if PART == 3 {
-            step_grid(m, |g,p| g.neighbours_with_diagonals(p))
+            step_grid(m, |g, p| g.neighbours_with_diagonals(p))
         } else {
-            step_grid(m, |g,p| g.neighbours(p))
+            step_grid(m, |g, p| g.neighbours(p))
         };
         m = n;
         if count == 0 {
@@ -50,7 +50,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
 #[cfg(test)]
 mod test {
     use super::*;
-    const EG : &str = "..........
+    const EG: &str = "..........
 ..###.##..
 ...####...
 ..######..
@@ -60,11 +60,11 @@ mod test {
 
     #[test]
     fn p1_example() {
-        assert_eq!( solve::<1>(EG), 35);
+        assert_eq!(solve::<1>(EG), 35);
     }
 
     #[test]
     fn p3_example() {
-        assert_eq!( solve::<3>(EG), 29);
+        assert_eq!(solve::<3>(EG), 29);
     }
 }

@@ -13,12 +13,13 @@ fn solve<const PART: usize>(input: &str) -> usize {
     let n: usize = input.parse().unwrap();
     match PART {
         1 => {
-            let sr = sqrt(n)+1;
+            let sr = sqrt(n) + 1;
             ((sr * sr) - n) * (2 * sr - 1)
         }
-        2 => {
-            P2::new(20240000, n as i64, 1111).solve().try_into().unwrap()
-        }
+        2 => P2::new(20240000, n as i64, 1111)
+            .solve()
+            .try_into()
+            .unwrap(),
         3 => P3::new(n as u64, 10, 202400000).solve().try_into().unwrap(),
         _ => unimplemented!(),
     }

@@ -87,11 +87,21 @@ impl<'a, T> Iterator for PermutationBag<'a, T> {
             if path.len() == self.k {
                 return Some(path.into_iter().map(|ix| &self.available[ix].0).collect());
             }
-            let mut counts : Vec<usize> = vec![0;self.available.len()];
+            let mut counts: Vec<usize> = vec![0; self.available.len()];
             for &item in &path {
-                counts[item] +=1;
+                counts[item] += 1;
             }
-            let choices = self.available.iter().enumerate().filter_map(|(ix,(_,n))| (*n > counts[ix]).then_some({let mut new = path.clone(); new.push(ix); new}));
+            let choices = self
+                .available
+                .iter()
+                .enumerate()
+                .filter_map(|(ix, (_, n))| {
+                    (*n > counts[ix]).then_some({
+                        let mut new = path.clone();
+                        new.push(ix);
+                        new
+                    })
+                });
             self.stack.extend(choices);
         }
         None
