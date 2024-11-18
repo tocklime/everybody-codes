@@ -29,12 +29,8 @@
             bacon
             hyperfine
             cargo-flamegraph
+            bashInteractive
           ];
-
-          shellHook = ''
-            alias ls=eza
-            alias find=fd
-          '';
         };
       }
     );
