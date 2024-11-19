@@ -141,14 +141,14 @@ fn solve3(input: &str, track: &str) -> usize {
             .split(",")
             .map(|x| x.chars().next().unwrap())
             .collect();
-        run_race(&instructions, &track_iter, track_iter.len() * 2024)
+        run_race(&instructions, &track_iter, track_iter.len() * 11)
     };
     println!("Rival score is {rival_score}");
 
     PermutationBag::new(&[('+', 5), ('-', 3), ('=', 3)], 11)
         .filter(|p| {
             let p: Vec<char> = p.iter().map(|x| **x).collect();
-            run_race(&p, &track_iter, track_iter.len() * 2024) > rival_score
+            run_race(&p, &track_iter, track_iter.len() * 11) > rival_score
         })
         .count()
 }

@@ -154,12 +154,7 @@ fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {
                     .to_vec();
                     let intersect = lone_intersection(&row_given, &col_given);
                     if intersect.is_some() && intersect.unwrap() != '?' {
-                        place_character(
-                            grid,
-                            base,
-                            Point::new(2 + col, 2 + row),
-                            intersect.unwrap(),
-                        );
+                        grid[pos] = intersect.unwrap();
                         ans.push(intersect.unwrap());
                         keep_going = true;
                         any_progress_at_all = true;
