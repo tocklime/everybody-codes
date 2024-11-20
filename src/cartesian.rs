@@ -25,6 +25,11 @@ pub struct Point<T> {
     pub y: T, //important to order y then x, because that gives you row-major order, which is required for y2018d15.
     pub x: T,
 }
+impl<T: Display> Display for Point<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("({},{})",self.x,self.y))
+    }
+}
 impl From<Point<usize>> for Point<isize> {
     fn from(value: Point<usize>) -> Self {
         Self::new(value.x.try_into().unwrap(), value.y.try_into().unwrap())
