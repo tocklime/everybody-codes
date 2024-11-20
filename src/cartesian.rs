@@ -25,6 +25,11 @@ pub struct Point<T> {
     pub y: T, //important to order y then x, because that gives you row-major order, which is required for y2018d15.
     pub x: T,
 }
+impl From<Point<usize>> for Point<isize> {
+    fn from(value: Point<usize>) -> Self {
+        Self::new(value.x.try_into().unwrap(), value.y.try_into().unwrap())
+    }
+}
 
 impl<T> From<(T, T)> for Point<T> {
     fn from((y, x): (T, T)) -> Self {
