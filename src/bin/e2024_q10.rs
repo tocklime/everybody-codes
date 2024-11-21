@@ -94,7 +94,7 @@ fn place_character(
     let row_qs = grid
         .values_in_direction(
             word_base + P::new(0, cell_relative_position.y),
-            Point::new(1, 0),
+            Point::new(1usize, 0),
         )
         .take(8)
         .map(|x| (x.0, *x.1))
@@ -108,7 +108,7 @@ fn place_character(
     let col_qs = grid
         .values_in_direction(
             word_base + P::new(cell_relative_position.x, 0),
-            Point::new(0, 1),
+            Point::new(0usize, 1),
         )
         .take(8)
         .map(|x| (x.0, *x.1))
@@ -160,12 +160,12 @@ fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {
                         any_progress_at_all = true;
                     } else {
                         let row_known: Vec<char> = grid
-                            .values_in_direction(solve_base + Point::new(0, row), Point::new(1, 0))
+                            .values_in_direction(solve_base + Point::new(0, row), Point::new(1usize, 0))
                             .take(4)
                             .map(|x| *x.1)
                             .collect();
                         let col_known: Vec<char> = grid
-                            .values_in_direction(solve_base + Point::new(col, 0), Point::new(0, 1))
+                            .values_in_direction(solve_base + Point::new(col, 0), Point::new(0usize, 1))
                             .take(4)
                             .map(|x| *x.1)
                             .collect();
