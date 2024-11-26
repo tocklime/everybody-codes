@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeMap, HashMap}, hash::Hash, iter::repeat
+    collections::HashMap, hash::Hash
 };
 
 use itertools::Itertools;
@@ -9,17 +9,19 @@ const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q16_p2.t
 const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q16_p3.txt");
 
 fn main() {
-    println!("P1: {}", solve1(P1_INPUT));
-    println!("P2: {}", solve2(P2_INPUT));
-    println!("P3: {:?}", solve3(P3_INPUT, 256));
+    println!("P1: {}", solve1::<4>(P1_INPUT));
+    println!("P2: {}", solve2::<10>(P2_INPUT));
+    println!("P3: {:?}", solve3::<5>(P3_INPUT, 256));
 }
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
-struct Machine {
-    counts: Vec<usize>,
-    wheels: Vec<Vec<String>>,
+struct Machine<const SIZE: usize> {
+    counts: [usize;SIZE],
+    wheels: [Vec<String>;SIZE],
+    symbols: [u8;256], //byte to index.
+    symbol_count: usize,
 }
 
-impl Machine {
+impl<const SIZE: usize> Machine<SIZE> {
     fn from_str(input: &str) -> Self {
         let mut ls = input.lines();
         let counts: Vec<usize> = ls
@@ -28,8 +30,11 @@ impl Machine {
             .split(',')
             .map(|x| x.parse().unwrap())
             .collect();
+        assert_eq!(counts.len(),SIZE);
         let _blank = ls.next().unwrap();
-        let mut wheels = vec![Vec::new(); counts.len()];
+        let mut wheels = std::array::from_fn(|_|Vec::new());
+        let mut symbols = [255u8;256];
+        let mut next_sym_ix = 0;
         for l in ls {
             let mut line = l.chars();
             let mut ix = 0;
@@ -38,6 +43,12 @@ impl Machine {
                     .into_iter()
                     .collect();
                 if let Some(x) = next {
+                    for b in x.bytes().into_iter().step_by(2).take(2) {
+                        if symbols[b as usize] == 255 {
+                            symbols[b as usize] = next_sym_ix.try_into().unwrap();
+                            next_sym_ix += 1;
+                        }
+                    }
                     if x != "   " {
                         wheels[ix].push(x);
                     }
@@ -48,45 +59,49 @@ impl Machine {
                 ix += 1;
             }
         }
-        Self { counts, wheels }
+        Self { counts: counts.try_into().unwrap(), wheels, symbols, symbol_count: next_sym_ix }
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-struct MachineState<'m> {
-    machine: &'m Machine,
-    pos: Vec<usize>,
+struct MachineState<'m, const SIZE: usize> {
+    machine: &'m Machine<SIZE>,
+    pos: [u8;SIZE],
 }
-impl<'m> Hash for MachineState<'m> {
+impl<'m, const SIZE: usize> Hash for MachineState<'m, SIZE> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.pos.hash(state);
     }
     
 }
 
-impl<'m> MachineState<'m> {
-    fn new(machine: &'m Machine) -> Self {
+impl<'m, const SIZE: usize> MachineState<'m, SIZE> {
+    fn new(machine: &'m Machine<SIZE>) -> Self {
+        assert!(machine.wheels.iter().all(|w|w.len() < u8::MAX as usize));
         Self {
             machine,
-            pos: repeat(0).take(machine.counts.len()).collect(),
+            pos: [0; SIZE]
         }
     }
     fn score(&self) -> usize {
-        let mut map: BTreeMap<char, usize> = BTreeMap::new();
+        let mut map :Vec<usize> = std::iter::repeat(0).take(self.machine.symbol_count).collect();
+        // let mut map: BTreeMap<char, usize> = BTreeMap::new();
         for c in self
             .machine
             .wheels
             .iter()
             .zip(self.pos.iter())
-            .flat_map(|(w, &p)| [w[p].chars().nth(0).unwrap(), w[p].chars().nth(2).unwrap()])
+            .flat_map(|(w, &p)| w[p as usize].bytes().step_by(2).take(2))
         {
-            *map.entry(c).or_default() += 1;
+            let ix = self.machine.symbols[c as usize];
+            assert_ne!(ix,255);
+            map[ix as usize] += 1;
         }
-        map.values().map(|&x| x.saturating_sub(2)).sum()
+        map.iter().map(|&x| x.saturating_sub(2)).sum()
     }
     fn pull_left(&self) -> Self {
         let mut new = self.clone();
         for i in 0..new.pos.len() {
-            new.pos[i] = (new.pos[i] + 1) % new.machine.wheels[i].len();
+            new.pos[i] = ((new.pos[i] as usize + 1) % new.machine.wheels[i].len()).try_into().unwrap();
         }
         new
     }
@@ -94,33 +109,33 @@ impl<'m> MachineState<'m> {
         let mut new = self.clone();
         for i in 0..new.pos.len() {
             new.pos[i] =
-                (new.pos[i] + (new.machine.wheels[i].len() - 1)) % new.machine.wheels[i].len();
+                ((new.pos[i] as usize + new.machine.wheels[i].len() - 1) % new.machine.wheels[i].len()) as u8;
         }
         new
     }
     fn pull_right(&mut self, count: usize) {
         for i in 0..self.pos.len() {
             self.pos[i] =
-                (self.pos[i] + count * self.machine.counts[i]) % self.machine.wheels[i].len();
+                ((self.pos[i] as usize + count * self.machine.counts[i]) % self.machine.wheels[i].len()) as u8;
         }
     }
     fn read(&self) -> String {
         self.pos
             .iter()
             .enumerate()
-            .map(|(ix, &x)| &self.machine.wheels[ix][x])
+            .map(|(ix, &x)| &self.machine.wheels[ix][x as usize])
             .join(" ")
     }
 }
-fn solve1(input: &str) -> String {
-    let m = Machine::from_str(input);
+fn solve1<const SIZE: usize>(input: &str) -> String {
+    let m = Machine::<SIZE>::from_str(input);
     let mut ms = MachineState::new(&m);
     ms.pull_right(100);
     ms.read()
 }
 
-fn solve2(input: &str) -> usize {
-    let m = Machine::from_str(input);
+fn solve2<const SIZE: usize>(input: &str) -> usize {
+    let m = Machine::<SIZE>::from_str(input);
     let mut ms = MachineState::new(&m);
 
     let final_iter = 202420242024_usize;
@@ -139,11 +154,11 @@ fn solve2(input: &str) -> usize {
     coins.iter().sum::<usize>()
 }
 
-fn solve3(input: &str, iterations: usize) -> (usize, usize) {
+fn solve3<const SIZE: usize>(input: &str, iterations: usize) -> (usize, usize) {
     //there is 94,500,000 positions for my input (35*30*40*45*50).
-    let m = Machine::from_str(input);
+    let m = Machine::<SIZE>::from_str(input);
     let ms = MachineState::new(&m);
-    let mut state: HashMap<MachineState, (usize, usize)> = [(ms, (0, 0))].into_iter().collect();
+    let mut state: HashMap<MachineState<SIZE>, (usize, usize)> = [(ms, (0, 0))].into_iter().collect();
     for _n in 0..iterations {
         let mut new_bests = HashMap::new();
         for (k, v) in &state {
@@ -179,11 +194,11 @@ mod test {
     >.>";
     #[test]
     fn p1_example() {
-        assert_eq!(solve1(EG1), ">.- -.- ^,-");
+        assert_eq!(solve1::<3>(EG1), ">.- -.- ^,-");
     }
     #[test]
     fn p2_example() {
-        assert_eq!(solve2(EG1), 280014668134)
+        assert_eq!(solve2::<3>(EG1), 280014668134)
     }
     const EG3: &str = "1,2,3
 
@@ -194,13 +209,13 @@ mod test {
     >.>";
     #[test]
     fn p3_example() {
-        assert_eq!(solve3(EG3, 1), (4, 1));
-        assert_eq!(solve3(EG3, 2), (6, 1));
-        assert_eq!(solve3(EG3, 3), (9, 2));
-        assert_eq!(solve3(EG3, 10), (26, 5));
-        assert_eq!(solve3(EG3, 100), (246, 50));
-        assert_eq!(solve3(EG3, 256), (627, 128));
-        assert_eq!(solve3(EG3, 1000), (2446, 500));
-        assert_eq!(solve3(EG3, 2024), (4948, 1012));
+        assert_eq!(solve3::<3>(EG3, 1), (4, 1));
+        assert_eq!(solve3::<3>(EG3, 2), (6, 1));
+        assert_eq!(solve3::<3>(EG3, 3), (9, 2));
+        assert_eq!(solve3::<3>(EG3, 10), (26, 5));
+        assert_eq!(solve3::<3>(EG3, 100), (246, 50));
+        assert_eq!(solve3::<3>(EG3, 256), (627, 128));
+        assert_eq!(solve3::<3>(EG3, 1000), (2446, 500));
+        assert_eq!(solve3::<3>(EG3, 2024), (4948, 1012));
     }
 }
