@@ -1,6 +1,5 @@
 use std::{
-    collections::{BTreeMap, HashMap},
-    iter::repeat,
+    collections::{BTreeMap, HashMap}, hash::Hash, iter::repeat
 };
 
 use itertools::Itertools;
@@ -19,6 +18,7 @@ struct Machine {
     counts: Vec<usize>,
     wheels: Vec<Vec<String>>,
 }
+
 impl Machine {
     fn from_str(input: &str) -> Self {
         let mut ls = input.lines();
@@ -51,11 +51,18 @@ impl Machine {
         Self { counts, wheels }
     }
 }
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct MachineState<'m> {
     machine: &'m Machine,
     pos: Vec<usize>,
 }
+impl<'m> Hash for MachineState<'m> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.pos.hash(state);
+    }
+    
+}
+
 impl<'m> MachineState<'m> {
     fn new(machine: &'m Machine) -> Self {
         Self {
