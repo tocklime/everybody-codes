@@ -27,7 +27,7 @@ pub struct Point<T> {
 }
 impl<T: Display> Display for Point<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("({},{})",self.x,self.y))
+        f.write_fmt(format_args!("({},{})", self.x, self.y))
     }
 }
 impl From<Point<usize>> for Point<isize> {

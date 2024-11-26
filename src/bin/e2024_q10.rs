@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use everybody_codes::{cartesian::Point, grid2d::Grid2d};
 use itertools::Itertools;
 
@@ -160,12 +158,18 @@ fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {
                         any_progress_at_all = true;
                     } else {
                         let row_known: Vec<char> = grid
-                            .values_in_direction(solve_base + Point::new(0, row), Point::new(1usize, 0))
+                            .values_in_direction(
+                                solve_base + Point::new(0, row),
+                                Point::new(1usize, 0),
+                            )
                             .take(4)
                             .map(|x| *x.1)
                             .collect();
                         let col_known: Vec<char> = grid
-                            .values_in_direction(solve_base + Point::new(col, 0), Point::new(0usize, 1))
+                            .values_in_direction(
+                                solve_base + Point::new(col, 0),
+                                Point::new(0usize, 1),
+                            )
                             .take(4)
                             .map(|x| *x.1)
                             .collect();

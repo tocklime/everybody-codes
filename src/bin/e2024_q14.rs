@@ -77,7 +77,7 @@ fn solve3(input: &str) -> u64 {
                         pathfinding::directed::astar::astar(
                             &p,
                             |&x| neighbours(x, &seen),
-                            |&x| hamming(l,x),
+                            |&x| hamming(l, x),
                             |&x| x == l,
                         )
                         .unwrap()
