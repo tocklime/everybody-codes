@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 ansi_term = "0.12.1"
+indicatif = "0.17.9"
 itertools = "0.13.0"
 modinverse = "0.1.1"
 ndarray = "0.16.1"
@@ -18,6 +19,7 @@ platform-dirs = "0.3.0"
 proptest = "1.5.0"
 quickcheck = "1.0.3"
 quickcheck_macros = "1.0.0"
+rayon = "1.10.0"
 reformation = "0.5.3"
 
 [profile.release]
