@@ -1,6 +1,6 @@
-use std::collections::HashSet;
-use indicatif::{ProgressBar, ProgressIterator};
+use indicatif::ProgressBar;
 use rayon::prelude::*;
+use std::collections::HashSet;
 
 use everybody_codes::{cartesian::Point, grid2d::Grid2d};
 
@@ -52,33 +52,37 @@ fn solve3(input: &str) -> usize {
         .filter(|(_x, c)| *c == &'P')
         .map(|x| x.0)
         .collect();
-    println!("Targets: {}",targets.len());
+    println!("Targets: {}", targets.len());
     let sl = starts.len();
     let prog = ProgressBar::new(sl as u64);
-    starts.par_iter().map(|&s| {
-        prog.inc(1);
-        let mut targets = targets.clone();
-        let mut fringe: HashSet<Point<usize>> = [s].into_iter().collect();
-        let mut seen: HashSet<Point<usize>> = fringe.clone();
-        let mut time = 1;
-        let mut score = 0;
-        while !targets.is_empty() && !fringe.is_empty() {
-            fringe = fringe
-                .into_iter()
-                .flat_map(|x| g.neighbours(x))
-                .filter(|n| !seen.contains(n) && g[*n] != '#')
-                .collect();
-            seen.extend(fringe.iter().cloned());
-            score += fringe.intersection(&targets).count() * time;
-            targets = targets.difference(&fringe).cloned().collect();
-            time += 1;
-        }
-        if targets.is_empty() {
-            score
-        } else {
-            usize::MAX
-        }
-    }).min().unwrap()
+    starts
+        .par_iter()
+        .map(|&s| {
+            prog.inc(1);
+            let mut targets = targets.clone();
+            let mut fringe: HashSet<Point<usize>> = [s].into_iter().collect();
+            let mut seen: HashSet<Point<usize>> = fringe.clone();
+            let mut time = 1;
+            let mut score = 0;
+            while !targets.is_empty() && !fringe.is_empty() {
+                fringe = fringe
+                    .into_iter()
+                    .flat_map(|x| g.neighbours(x))
+                    .filter(|n| !seen.contains(n) && g[*n] != '#')
+                    .collect();
+                seen.extend(fringe.iter().cloned());
+                score += fringe.intersection(&targets).count() * time;
+                targets = targets.difference(&fringe).cloned().collect();
+                time += 1;
+            }
+            if targets.is_empty() {
+                score
+            } else {
+                usize::MAX
+            }
+        })
+        .min()
+        .unwrap()
 }
 
 #[cfg(test)]
