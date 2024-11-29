@@ -4,6 +4,55 @@ pub fn all_ix_pairs(arr_len: usize) -> impl Iterator<Item = (usize, usize)> {
     (0..arr_len - 1).flat_map(move |ix1| (ix1 + 1..arr_len).map(move |ix2| (ix1, ix2)))
 }
 
+struct Unfold<T, F> {
+    current: T,
+    func: F,
+}
+
+impl<T, F: Fn(&T) -> T> Iterator for Unfold<T, F> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let mut next = (self.func)(&self.current);
+        std::mem::swap(&mut next, &mut self.current);
+        Some(next)
+    }
+}
+pub fn unfold<T, F: Fn(&T) -> T>(initial_value: T, step_func: F) -> impl Iterator<Item = T> {
+    Unfold {
+        current: initial_value,
+        func: step_func,
+    }
+}
+
+pub fn quick_index_by_simple_cycle<T, I>(mut iterator: I, index: usize) -> Option<T>
+where
+    T: Clone + PartialEq,
+    I: Iterator<Item = T>,
+    T: std::fmt::Debug,
+{
+    let first = iterator.next()?;
+    if index == 0 {
+        return Some(first);
+    }
+    let mut last = iterator.next()?;
+    let mut current_ix = 1;
+    loop {
+        if current_ix == index {
+            return Some(last);
+        }
+        if last == first {
+            //cycled after i iterations.
+            match index % current_ix {
+                0 => return Some(last),
+                n => return iterator.nth(n - 1),
+            }
+        }
+        current_ix += 1;
+        last = iterator.next()?;
+    }
+}
+
 pub fn all_new_greatest_with<T, TInner, F>(
     iter: impl Iterator<Item = T>,
     f: F,
@@ -105,5 +154,31 @@ impl<'a, T> Iterator for PermutationBag<'a, T> {
             self.stack.extend(choices);
         }
         None
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_unfold() {
+        let i: Vec<usize> = unfold(0, |x| x + 1).take(5).collect();
+        assert_eq!(i, &[0, 1, 2, 3, 4]);
+
+        let i = || unfold(0, |x| (x + 1) % 10);
+        assert_eq!(quick_index_by_simple_cycle(i(), 0), Some(0));
+        assert_eq!(quick_index_by_simple_cycle(i(), 1), Some(1));
+        assert_eq!(quick_index_by_simple_cycle(i(), 5), Some(5));
+        assert_eq!(quick_index_by_simple_cycle(i(), 10), Some(0));
+        assert_eq!(quick_index_by_simple_cycle(i(), 11), Some(1));
+        assert_eq!(quick_index_by_simple_cycle(i(), 19), Some(9));
+        assert_eq!(quick_index_by_simple_cycle(i(), 20), Some(0));
+        assert_eq!(quick_index_by_simple_cycle(i(), 21), Some(1));
+        assert_eq!(quick_index_by_simple_cycle(i(), 22), Some(2));
+        assert_eq!(quick_index_by_simple_cycle(i(), 23), Some(3));
+        assert_eq!(quick_index_by_simple_cycle(i(), 24), Some(4));
+        assert_eq!(quick_index_by_simple_cycle(i(), 25), Some(5));
+        assert_eq!(quick_index_by_simple_cycle(i(), 29), Some(9));
     }
 }

@@ -245,14 +245,14 @@ impl<T: Num + WrappingAdd + WrappingSub> Point<T> {
         T: Copy,
     {
         [
+            self.down().left(),
+            self.down(),
+            self.right().down(),
+            self.left(),
+            self.right(),
+            self.left().up(),
             self.up(),
             self.up().right(),
-            self.right(),
-            self.right().down(),
-            self.down(),
-            self.down().left(),
-            self.left(),
-            self.left().up(),
         ]
     }
     pub fn hex_neighbours(&self) -> [Self; 6]

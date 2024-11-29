@@ -1,6 +1,4 @@
-use std::{
-    collections::HashMap, hash::Hash
-};
+use std::{collections::HashMap, hash::Hash};
 
 use itertools::Itertools;
 
@@ -15,9 +13,9 @@ fn main() {
 }
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
 struct Machine<const SIZE: usize> {
-    counts: [usize;SIZE],
-    wheels: [Vec<String>;SIZE],
-    symbols: [u8;256], //byte to index.
+    counts: [usize; SIZE],
+    wheels: [Vec<String>; SIZE],
+    symbols: [u8; 256], //byte to index.
     symbol_count: usize,
 }
 
@@ -30,10 +28,10 @@ impl<const SIZE: usize> Machine<SIZE> {
             .split(',')
             .map(|x| x.parse().unwrap())
             .collect();
-        assert_eq!(counts.len(),SIZE);
+        assert_eq!(counts.len(), SIZE);
         let _blank = ls.next().unwrap();
-        let mut wheels = std::array::from_fn(|_|Vec::new());
-        let mut symbols = [255u8;256];
+        let mut wheels = std::array::from_fn(|_| Vec::new());
+        let mut symbols = [255u8; 256];
         let mut next_sym_ix = 0;
         for l in ls {
             let mut line = l.chars();
@@ -43,7 +41,7 @@ impl<const SIZE: usize> Machine<SIZE> {
                     .into_iter()
                     .collect();
                 if let Some(x) = next {
-                    for b in x.bytes().into_iter().step_by(2).take(2) {
+                    for b in x.bytes().step_by(2).take(2) {
                         if symbols[b as usize] == 255 {
                             symbols[b as usize] = next_sym_ix.try_into().unwrap();
                             next_sym_ix += 1;
@@ -59,31 +57,37 @@ impl<const SIZE: usize> Machine<SIZE> {
                 ix += 1;
             }
         }
-        Self { counts: counts.try_into().unwrap(), wheels, symbols, symbol_count: next_sym_ix }
+        Self {
+            counts: counts.try_into().unwrap(),
+            wheels,
+            symbols,
+            symbol_count: next_sym_ix,
+        }
     }
 }
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 struct MachineState<'m, const SIZE: usize> {
     machine: &'m Machine<SIZE>,
-    pos: [u8;SIZE],
+    pos: [u8; SIZE],
 }
-impl<'m, const SIZE: usize> Hash for MachineState<'m, SIZE> {
+impl<const SIZE: usize> Hash for MachineState<'_, SIZE> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.pos.hash(state);
     }
-    
 }
 
 impl<'m, const SIZE: usize> MachineState<'m, SIZE> {
     fn new(machine: &'m Machine<SIZE>) -> Self {
-        assert!(machine.wheels.iter().all(|w|w.len() < u8::MAX as usize));
+        assert!(machine.wheels.iter().all(|w| w.len() < u8::MAX as usize));
         Self {
             machine,
-            pos: [0; SIZE]
+            pos: [0; SIZE],
         }
     }
     fn score(&self) -> usize {
-        let mut map :Vec<usize> = std::iter::repeat(0).take(self.machine.symbol_count).collect();
+        let mut map: Vec<usize> = std::iter::repeat(0)
+            .take(self.machine.symbol_count)
+            .collect();
         // let mut map: BTreeMap<char, usize> = BTreeMap::new();
         for c in self
             .machine
@@ -93,7 +97,7 @@ impl<'m, const SIZE: usize> MachineState<'m, SIZE> {
             .flat_map(|(w, &p)| w[p as usize].bytes().step_by(2).take(2))
         {
             let ix = self.machine.symbols[c as usize];
-            assert_ne!(ix,255);
+            assert_ne!(ix, 255);
             map[ix as usize] += 1;
         }
         map.iter().map(|&x| x.saturating_sub(2)).sum()
@@ -101,22 +105,24 @@ impl<'m, const SIZE: usize> MachineState<'m, SIZE> {
     fn pull_left(&self) -> Self {
         let mut new = self.clone();
         for i in 0..new.pos.len() {
-            new.pos[i] = ((new.pos[i] as usize + 1) % new.machine.wheels[i].len()).try_into().unwrap();
+            new.pos[i] = ((new.pos[i] as usize + 1) % new.machine.wheels[i].len())
+                .try_into()
+                .unwrap();
         }
         new
     }
     fn push_left(&self) -> Self {
         let mut new = self.clone();
         for i in 0..new.pos.len() {
-            new.pos[i] =
-                ((new.pos[i] as usize + new.machine.wheels[i].len() - 1) % new.machine.wheels[i].len()) as u8;
+            new.pos[i] = ((new.pos[i] as usize + new.machine.wheels[i].len() - 1)
+                % new.machine.wheels[i].len()) as u8;
         }
         new
     }
     fn pull_right(&mut self, count: usize) {
         for i in 0..self.pos.len() {
-            self.pos[i] =
-                ((self.pos[i] as usize + count * self.machine.counts[i]) % self.machine.wheels[i].len()) as u8;
+            self.pos[i] = ((self.pos[i] as usize + count * self.machine.counts[i])
+                % self.machine.wheels[i].len()) as u8;
         }
     }
     fn read(&self) -> String {
@@ -158,7 +164,8 @@ fn solve3<const SIZE: usize>(input: &str, iterations: usize) -> (usize, usize) {
     //there is 94,500,000 positions for my input (35*30*40*45*50).
     let m = Machine::<SIZE>::from_str(input);
     let ms = MachineState::new(&m);
-    let mut state: HashMap<MachineState<SIZE>, (usize, usize)> = [(ms, (0, 0))].into_iter().collect();
+    let mut state: HashMap<MachineState<SIZE>, (usize, usize)> =
+        [(ms, (0, 0))].into_iter().collect();
     for _n in 0..iterations {
         let mut new_bests = HashMap::new();
         for (k, v) in &state {
@@ -170,9 +177,13 @@ fn solve3<const SIZE: usize>(input: &str, iterations: usize) -> (usize, usize) {
                 let coins = action.score();
                 let new_min = v.0 + coins;
                 let new_max = v.1 + coins;
-                let existing = new_bests.entry(action).or_insert((usize::MAX, 0usize));
-                existing.0 = existing.0.min(new_min);
-                existing.1 = existing.1.max(new_max);
+                new_bests
+                    .entry(action)
+                    .and_modify(|(min, max)| {
+                        *min = new_min.min(*min);
+                        *max = new_max.max(*max);
+                    })
+                    .or_insert((new_min, new_max));
             }
         }
         state = new_bests;

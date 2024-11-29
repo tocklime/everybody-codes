@@ -1,4 +1,9 @@
-use std::{path::PathBuf, process::Command, str::FromStr};
+use std::{
+    io::Read,
+    path::PathBuf,
+    process::{Command, Stdio},
+    str::FromStr,
+};
 
 use itertools::Itertools;
 
@@ -38,18 +43,23 @@ fn main() {
 
     let target_str = best.to_string_lossy();
     let target = target_str.split(".").next().unwrap();
-    let test = Command::new("cargo")
+    let mut test = Command::new("cargo")
         .args(["test", "--bin", target])
+        .stdout(Stdio::piped())
         .spawn()
-        .unwrap()
-        .wait()
         .unwrap();
-    println!("Tests status: {test:?}");
-    let res = Command::new("cargo")
-        .args(["run", "-r", "--bin", target])
-        .spawn()
-        .unwrap()
-        .wait()
-        .unwrap();
-    println!("Exit status: {res:?}");
+    let res = test.wait().unwrap();
+    if !res.success() {
+        let mut stdout = String::new();
+        test.stdout.unwrap().read_to_string(&mut stdout).unwrap();
+        println!("{}", stdout);
+    } else {
+        let res = Command::new("cargo")
+            .args(["run", "-r", "--bin", target])
+            .spawn()
+            .unwrap()
+            .wait()
+            .unwrap();
+        println!("Exit status: {res:?}");
+    }
 }
