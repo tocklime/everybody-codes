@@ -112,6 +112,11 @@ impl<T: Copy> Grid2d<T> {
         Grid2d::from_fn(size, |x| self[base + x])
     }
 }
+impl<T: PartialEq> Grid2d<T> {
+    pub fn find_elem(&self, elem: &T) -> Option<Coord> {
+        self.indexed_iter().find(|e| e.1 == elem).map(|x| x.0)
+    }
+}
 impl<T> Grid2d<T> {
     pub fn sub_grid<TC1, TC2>(&self, base: TC1, size: TC2) -> Grid2d<&T>
     where
@@ -248,10 +253,10 @@ impl<T> Grid2d<T> {
     pub fn neighbours(&'_ self, p: Coord) -> impl Iterator<Item = Coord> {
         let s = self.dim();
         [
-            (p.y.wrapping_sub(1), p.x),
-            (p.y, p.x.wrapping_sub(1)),
-            (p.y + 1, p.x),
-            (p.y, p.x + 1),
+            (p.y.wrapping_sub(1), p.x),//Down
+            (p.y, p.x.wrapping_sub(1)),//Left
+            (p.y + 1, p.x),//Up
+            (p.y, p.x + 1),//Right
         ]
         .map(Into::into)
         .into_iter()
