@@ -12,7 +12,8 @@ fn main() {
     let mut x = std::fs::read_dir(&src).unwrap();
     let (_, best) = x
         .fold_ok(None, |acc, e| {
-            if e.file_name() != "most_recent.rs" && e.file_name() != "template.txt" {
+            let file_name = e.file_name().into_string().unwrap();
+            if file_name.starts_with("e") && file_name.ends_with(".rs") {
                 let modified = e.metadata().unwrap().modified().unwrap();
                 match acc {
                     Some((dt, _)) if dt > modified => {}

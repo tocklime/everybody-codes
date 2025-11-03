@@ -1,5 +1,7 @@
 use std::cmp::Ordering;
 
+use num::Num;
+
 pub fn all_ix_pairs(arr_len: usize) -> impl Iterator<Item = (usize, usize)> {
     (0..arr_len - 1).flat_map(move |ix1| (ix1 + 1..arr_len).map(move |ix2| (ix1, ix2)))
 }
@@ -25,30 +27,34 @@ pub fn unfold<T, F: Fn(&T) -> T>(initial_value: T, step_func: F) -> impl Iterato
     }
 }
 
-pub fn quick_index_by_simple_cycle<T, I>(mut iterator: I, index: usize) -> Option<T>
+pub fn quick_index_by_simple_cycle<T, I, N>(mut iterator: I, index: N) -> Option<T>
 where
     T: Clone + PartialEq,
     I: Iterator<Item = T>,
     T: std::fmt::Debug,
+    N: Num + TryInto<usize>,
+    <N as TryInto<usize>>::Error : std::fmt::Debug
 {
     let first = iterator.next()?;
-    if index == 0 {
+    if index.is_zero() {
         return Some(first);
     }
     let mut last = iterator.next()?;
-    let mut current_ix = 1;
+    let mut current_ix = N::one();
     loop {
         if current_ix == index {
             return Some(last);
         }
         if last == first {
             //cycled after i iterations.
-            match index % current_ix {
-                0 => return Some(last),
-                n => return iterator.nth(n - 1),
+            let to_step : usize = (index % current_ix).try_into().unwrap();
+            if to_step == 0 {
+                return Some(last);
+            } else {
+                return iterator.nth(to_step-1);
             }
         }
-        current_ix += 1;
+        current_ix = current_ix + N::one();
         last = iterator.next()?;
     }
 }

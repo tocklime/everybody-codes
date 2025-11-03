@@ -7,17 +7,12 @@ const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q19_p3.t
 
 fn main() {
     println!("P1: {}", solve::<1>(P1_INPUT));
-    println!("P2: {}", solve::<2>(P2_INPUT));
-    println!("P3: {}", solve::<3>(P3_INPUT));
+    println!("P2: {}", solve::<100>(P2_INPUT));
+    println!("P3: {}", solve::<1048576000>(P3_INPUT));
 }
 
-fn solve<const PART: usize>(input: &str) -> String {
-    let iterations = match PART {
-        1 => 1,
-        2 => 100,
-        3 => 1048576000,
-        _ => unimplemented!(),
-    };
+fn solve<const ITERATIONS: u128>(input: &str) -> String {
+    let iterations = ITERATIONS;
     let (key, grid) = input.split_once("\n\n").unwrap();
     let grid = Grid2d::from_str(grid, |x| x);
 
@@ -88,6 +83,6 @@ A.VI..>...T
 D.H........";
     #[test]
     fn p2_example() {
-        assert_eq!(&solve::<2>(EG2), "VICTORY");
+        assert_eq!(&solve::<100>(EG2), "VICTORY");
     }
 }

@@ -1,5 +1,7 @@
 use std::{fmt::Debug, str::FromStr};
 
+use nom::Parser;
+
 #[allow(clippy::missing_errors_doc)]
 pub fn try_parse_many<T, E>(input: &str, sep: &str) -> Result<Vec<T>, E>
 where
@@ -23,4 +25,23 @@ where
     F: Fn(&'a str) -> T + 'a,
 {
     input.trim().split(sep).map(|x| f(x.trim())).collect()
+}
+
+pub fn get_matches_from_str<'a, T, P>(mut input: &'a str, mut parser: P) -> Vec<T> 
+where P : Parser<&'a str, T, ()> 
+{
+    let mut ans = Vec::new();
+    while !input.is_empty() {
+        match parser.parse(input) {
+            Ok((rest, t)) => {
+                ans.push(t);
+                input = rest;
+            }
+            Err(_) => {
+                input = &input[1..];
+            }
+        }
+    }
+    ans 
+
 }
