@@ -9,6 +9,4 @@ where
     delimited(multispace0, inner, multispace0)
 }
 
-pub type NomError<'a> = nom_supreme::error::ErrorTree<&'a str>;
-pub type IResult<'a, T> = nom::IResult<&'a str, T, NomError<'a>>;
 
