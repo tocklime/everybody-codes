@@ -89,4 +89,10 @@ x=4 y=10
 x=5 y=3";
         assert_eq!(solve::<2>(EG2B), 13659);
     }
+    #[test]
+    fn correct_answers() {
+        assert_eq!(solve::<1>(P1_INPUT), 4334);
+        assert_eq!(solve::<2>(P2_INPUT), 1088530);
+        assert_eq!(solve::<3>(P3_INPUT), 90630764817);
+    }
 }
