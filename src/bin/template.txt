@@ -1,6 +1,6 @@
-const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_qXX_p1.txt");
-// const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_qXX_p2.txt");
-// const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_qXX_p3.txt");
+const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_qXX_p1.txt");
+// const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_qXX_p2.txt");
+// const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_qXX_p3.txt");
 
 fn main() {
     println!("P1: {}", solve::<1>(P1_INPUT));
