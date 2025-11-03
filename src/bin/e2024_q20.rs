@@ -3,12 +3,12 @@ use itertools::Itertools;
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q20_p1.txt");
 const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q20_p2.txt");
-const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q20_p3.txt");
+// const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2024_q20_p3.txt");
 
 fn main() {
     println!("P1: {}", solve::<1>(P1_INPUT));
-    // println!("P2: {}", solve2(P2_INPUT));
-    println!("P3: {}", solve3(P3_INPUT, 384400));
+    println!("P2: {}", solve2(P2_INPUT));
+    // println!("P3: {}", solve3(P3_INPUT, 384400));
 }
 fn solve<const PART: usize>(input: &str) -> usize {
     let init_height = 1000;
@@ -61,7 +61,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
     }
     let x = h_grid
         .iter()
-        .flat_map(|x| x)
+        .flatten()
         .filter_map(|x| *x)
         .max()
         .unwrap();
@@ -76,7 +76,7 @@ fn solve2(input: &str) -> usize {
     let (path,cost) = pathfinding::directed::astar::astar(
         &(start, 0, 10000, start_dir),
         |(p, leg, height, dir)| {
-            let ret = g.neighbours(*p).enumerate().filter_map(|(d_ix, n)| {
+            g.neighbours(*p).enumerate().filter_map(|(d_ix, n)| {
                 let facing_dir = (d_ix + 2) % 4;
                 if let Some(d) = dir {
                     if d_ix == *d {
@@ -93,12 +93,11 @@ fn solve2(input: &str) -> usize {
                     _ => (*leg, Some(height - 1)),
                 };
                 new_h.map(|h| ((n, new_leg, h, Some(facing_dir)),1))
-            }).collect_vec();
-            ret
+            }).collect_vec()
         },
         |(p,leg,_,_)| 
             // if h < 10000 { 10000 - h } else { 0} + //time to get necessary height
-            check_points.iter().nth(*leg).map(|t| p.manhattan_unsigned(t)).unwrap_or_default() + //time to get to next checkpoint
+            check_points.get(*leg).map(|t| p.manhattan_unsigned(t)).unwrap_or_default() + //time to get to next checkpoint
             check_points.iter().skip(*leg).tuple_windows().map(|(a,b)| a.manhattan_unsigned(b)).sum::<usize>(),
         |(p, leg, height, _dir)| *p == start && *leg == 3 && *height >= 10000,
     ).unwrap();
@@ -108,17 +107,17 @@ fn solve2(input: &str) -> usize {
     cost
 }
 
-fn solve3(input: &str, initial_height: usize) -> usize {
-    //to nearest run of +s: 
-    let remaining_height = initial_height - init_left;
-    //grid height is 12, with 3 '+'s.
-    //so each grid we lose 12, and gain 6. or lose 6.
-    let complete_cycles = remaining_height / 6;
-    let h = remaining_height % 6;
-    dbg!(complete_cycles, h);
-    complete_cycles*12 + 11 //11 is manually counted last little landing bit.
+// fn solve3(input: &str, initial_height: usize) -> usize {
+//     //to nearest run of +s: 
+//     let remaining_height = initial_height - init_left;
+//     //grid height is 12, with 3 '+'s.
+//     //so each grid we lose 12, and gain 6. or lose 6.
+//     let complete_cycles = remaining_height / 6;
+//     let h = remaining_height % 6;
+//     dbg!(complete_cycles, h);
+//     complete_cycles*12 + 11 //11 is manually counted last little landing bit.
 
-}
+// }
 #[cfg(test)]
 mod test {
     use super::*;
@@ -145,30 +144,30 @@ mod test {
     fn p2_example() {
         assert_eq!(solve2(EG2), 24);
     }
-    const EG3 : &str = "#......S......#
-#-...+...-...+#
-#.............#
-#..+...-...+..#
-#.............#
-#-...-...+...-#
-#.............#
-#..#...+...+..#";
+//     const EG3 : &str = "#......S......#
+// #-...+...-...+#
+// #.............#
+// #..+...-...+..#
+// #.............#
+// #-...-...+...-#
+// #.............#
+// #..#...+...+..#";
     // #[test]
-    fn p3_example() {
-        assert_eq!(solve3(EG3,     1),          1);
-        assert_eq!(solve3(EG3,     2),          2);
-        assert_eq!(solve3(EG3,     3),          3);
-        assert_eq!(solve3(EG3,     4),          4);
-        assert_eq!(solve3(EG3,     5),          5);
-        assert_eq!(solve3(EG3,     6),          6);
-        assert_eq!(solve3(EG3,     7),          7);
-        assert_eq!(solve3(EG3,     8),          9);
-        assert_eq!(solve3(EG3,     9),         10);
-        assert_eq!(solve3(EG3,    10),         11);
-        assert_eq!(solve3(EG3,   100),        190);
-        assert_eq!(solve3(EG3,  1000),       1990);
-        assert_eq!(solve3(EG3, 10000),      19990);
-        assert_eq!(solve3(EG3,100000),     199990);
-        assert_eq!(solve3(EG3,384400),     768790);
-    }
+    // fn p3_example() {
+    //     assert_eq!(solve3(EG3,     1),          1);
+    //     assert_eq!(solve3(EG3,     2),          2);
+    //     assert_eq!(solve3(EG3,     3),          3);
+    //     assert_eq!(solve3(EG3,     4),          4);
+    //     assert_eq!(solve3(EG3,     5),          5);
+    //     assert_eq!(solve3(EG3,     6),          6);
+    //     assert_eq!(solve3(EG3,     7),          7);
+    //     assert_eq!(solve3(EG3,     8),          9);
+    //     assert_eq!(solve3(EG3,     9),         10);
+    //     assert_eq!(solve3(EG3,    10),         11);
+    //     assert_eq!(solve3(EG3,   100),        190);
+    //     assert_eq!(solve3(EG3,  1000),       1990);
+    //     assert_eq!(solve3(EG3, 10000),      19990);
+    //     assert_eq!(solve3(EG3,100000),     199990);
+    //     assert_eq!(solve3(EG3,384400),     768790);
+    // }
 }

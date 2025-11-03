@@ -25,7 +25,7 @@ fn eni(n: u64, exp: u64, modulus: u64) -> u64 {
     }
     ans.into_iter()
         .rev()
-        .flat_map(|n| digits(n))
+        .flat_map(digits)
         .fold(0, |acc, n| acc * 10 + n)
 }
 
@@ -41,7 +41,7 @@ fn eni5(n: u64, exp: u64, modulus: u64) -> u64 {
     }
     ans.into_iter()
         .rev()
-        .flat_map(|n| digits(n))
+        .flat_map(digits)
         .fold(0, |acc, n| acc * 10 + n)
 }
 fn eni_sum_naive(mut score: u64, base: u64, exp: u64, modulus: u64) -> u64 {
@@ -50,7 +50,7 @@ fn eni_sum_naive(mut score: u64, base: u64, exp: u64, modulus: u64) -> u64 {
         score = score * base % modulus;
         ans += score;
     }
-    return ans;
+    ans
 }
 fn eni_sum(base: u64, exp: u64, modulus: u64) -> u64 {
     //this is cycle detection.

@@ -28,7 +28,7 @@ where
 }
 
 pub fn get_matches_from_str<'a, T, P>(mut input: &'a str, mut parser: P) -> Vec<T> 
-where P : Parser<&'a str, T, ()> 
+where P : Parser<&'a str, Output = T, Error = ()> 
 {
     let mut ans = Vec::new();
     while !input.is_empty() {
