@@ -1,5 +1,6 @@
 use std::ops::{Add, Div, Mul};
 
+use itertools::Itertools;
 use nom::{bytes::complete::tag, character::complete::i64, Parser};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q02_p1.txt");
@@ -87,56 +88,44 @@ impl Div for ComplexNum {
 }
 
 fn main() {
-    println!("P1: {}", solve::<1>(P1_INPUT));
-    println!("P2: {}", solve::<2>(P2_INPUT));
-    println!("P3: {}", solve::<3>(P3_INPUT));
+    println!("P1: {}", check_maths(P1_INPUT));
+    println!("P2: {}", solve::<101>(P2_INPUT));
+    println!("P3: {}", solve::<1001>(P3_INPUT));
 }
-fn solve<const PART: usize>(input: &str) -> String {
+fn check_maths(input: &str) -> String {
     let (_, (_, a)) = ComplexNum::parse_line().parse(input).unwrap();
-    match PART {
-        1 => a.process(3, (10, 10).into()).unwrap().to_string(),
-        2 => {
-            let mut eng_count = 0;
-            for x in (a.x..).step_by(10).take(101) {
-                for y in (a.y..).step_by(10).take(101) {
-                    let n = ComplexNum { x, y };
-                    if n.should_engrave() {
-                        eng_count += 1;
-                    }
-                }
-            }
-            format!("{eng_count}")
-        }
-        3 => {
-            let mut eng_count = 0;
-            for x in (a.x..).take(1001) {
-                for y in (a.y..).take(1001) {
-                    let n = ComplexNum { x, y };
-                    if n.should_engrave() {
-                        eng_count += 1;
-                    }
-                }
-            }
-            format!("{eng_count}")
-        }
-        _ => unreachable!(),
-    }
+    a.process(3, (10, 10).into()).unwrap().to_string()
+}
+fn solve<const GRID_SIZE: usize>(input: &str) -> usize {
+    let (_, (_, a)) = ComplexNum::parse_line().parse(input).unwrap();
+    let step = 1000 / (GRID_SIZE - 1);
+    (a.x..)
+        .step_by(step)
+        .take(GRID_SIZE)
+        .cartesian_product((a.y..).step_by(step).take(GRID_SIZE))
+        .filter(|&(x, y)| ComplexNum { x, y }.should_engrave())
+        .count()
 }
 
 #[cfg(test)]
 mod test {
     use super::*;
-    const EG1: &str = "A=[25,9]";
     #[test]
     fn p1_example() {
-        assert_eq!(solve::<1>(EG1), "[357,862]");
+        assert_eq!(check_maths("A=[25,9]"), "[357,862]");
     }
     #[test]
     fn p2_example() {
-        assert_eq!(solve::<2>("A=[35300,-64910]"), "4076");
+        assert_eq!(solve::<101>("A=[35300,-64910]"), 4076);
     }
     #[test]
     fn p3_example() {
-        assert_eq!(solve::<3>("A=[35300,-64910]"), "406954");
+        assert_eq!(solve::<1001>("A=[35300,-64910]"), 406954);
+    }
+    #[test]
+    fn correct_answers() {
+        assert_eq!(check_maths(P1_INPUT), "[253617,708838]");
+        assert_eq!(solve::<101>(P2_INPUT), 1367);
+        assert_eq!(solve::<1001>(P3_INPUT), 134600);
     }
 }
