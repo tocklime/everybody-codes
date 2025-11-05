@@ -13,10 +13,10 @@ fn main() {
 }
 fn solve_line(input: &str) -> usize {
     let mut bolts = "RGB".chars().cycle();
-    let mut balloons = input.chars();
+    let balloons = input.chars();
     let mut current_bolt = None;
     let mut bolt_count = 0;
-    while let Some(b) = balloons.next() {
+    for b in balloons {
         if current_bolt.is_none() {
             current_bolt = bolts.next();
             bolt_count += 1;
@@ -26,7 +26,7 @@ fn solve_line(input: &str) -> usize {
             current_bolt = None;
         }
     }
-    return bolt_count;
+    bolt_count
 }
 fn solve_circle<const REPS: u32>(input: &str) -> usize {
     let mut bolts = "RGB".chars().cycle();
@@ -36,7 +36,7 @@ fn solve_circle<const REPS: u32>(input: &str) -> usize {
     let mut balloons_a: VecDeque<char> = balloons[0..len / 2].iter().copied().collect();
     let mut balloons_b: VecDeque<char> = balloons[len / 2..].iter().copied().collect();
     let mut bolt_count = 0;
-    while balloons_a.len() > 0 {
+    while !balloons_a.is_empty() {
         let bolt = bolts.next().unwrap();
         bolt_count += 1;
         // assert_eq!(balloons_a.len(), balloons_b.len());

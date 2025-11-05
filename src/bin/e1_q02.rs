@@ -31,11 +31,11 @@ impl Tree {
     }
     fn find_mut(&mut self, id: u32) -> Vec<&mut Self> {
         if self.id == id {
-            return vec![self];
+            vec![self]
         } else {
             let mut left = self.left.as_mut().map(|t| t.find_mut(id)).unwrap_or_default();
             let right =  self.right.as_mut().map(|t| t.find_mut(id)).unwrap_or_default();
-            left.extend(right.into_iter());
+            left.extend(right);
             left
         }
     }
@@ -58,7 +58,7 @@ impl Tree {
                 .as_ref()
                 .map(|t| t.read_rank(n - 1))
                 .unwrap_or_default();
-            left.extend(right.into_iter());
+            left.extend(right);
             left
         }
     }

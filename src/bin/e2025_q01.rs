@@ -14,7 +14,7 @@ fn solve<const PART: usize>(input: &str) -> String {
     let mut pos = 0usize;
     for i in instrs.split(",") {
         let (c, rest) = i.split_at(1);
-        let n = u32::from_str_radix(rest, 10).unwrap() as usize;
+        let n = rest.parse::<usize>().unwrap();
         match c {
             "R" => match PART {
                 1 => {
