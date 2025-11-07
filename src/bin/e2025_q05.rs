@@ -56,11 +56,11 @@ impl Segment {
         )
     }
 }
-struct Sword {
+struct Fishbone {
     id: u64,
     segments: Vec<Segment>,
 }
-impl Sword {
+impl Fishbone {
     fn parser<'a>() -> impl Parser<&'a str, Output = Self, Error = nom::error::Error<&'a str>> {
         (
             complete::u64,
@@ -90,8 +90,8 @@ impl Sword {
     }
 }
 
-fn parse(input: &str) -> Vec<Sword> {
-    nom::multi::separated_list1(newline, Sword::parser())
+fn parse(input: &str) -> Vec<Fishbone> {
+    nom::multi::separated_list1(newline, Fishbone::parser())
         .parse(input)
         .unwrap()
         .1
@@ -101,7 +101,7 @@ fn assess_sword(input: &str) -> u64 {
     parse(input)[0].quality()
 }
 fn get_checksum(input: &str) -> u64 {
-    let mut swords: Vec<Sword> = parse(input);
+    let mut swords: Vec<Fishbone> = parse(input);
     swords.sort_by_cached_key(|x| Reverse(x.make_cmp_key()));
     swords
         .iter()
@@ -112,7 +112,7 @@ fn get_checksum(input: &str) -> u64 {
 }
 
 fn find_quality_range(input: &str) -> u64 {
-    let x = parse(input).iter().map(Sword::quality).minmax();
+    let x = parse(input).iter().map(Fishbone::quality).minmax();
     match x {
         itertools::MinMaxResult::NoElements => panic!(),
         itertools::MinMaxResult::OneElement(_) => 0,
