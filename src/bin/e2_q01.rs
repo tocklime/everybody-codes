@@ -70,7 +70,7 @@ fn find_unique_set(grid: &[Vec<usize>], conv: impl Fn(usize)->usize) -> usize {
 fn solve3(input: &str) -> String {
     let (grid, instrs) = input.split_once("\n\n").unwrap();
     let grid = grid2d::Grid2d::from_str(grid, |x| x);
-    let slot_count = (grid.dim().x+1) / 2;
+    let slot_count = grid.dim().x.div_ceil(2);
     let mut ans_grid = Vec::new();
     for rules in instrs.lines() {
         let all= (1..=slot_count).map(|x| score_drop(&grid, rules, x)).collect::<Vec<_>>();
@@ -101,7 +101,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
         }
         ans
     } else {
-        let slot_count = (grid.dim().x+1) / 2;
+        let slot_count = grid.dim().x.div_ceil(2);
         let mut ans = 0;
         for rules in instrs.lines() {
             let best = (1..=slot_count)

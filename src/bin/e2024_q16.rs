@@ -85,8 +85,7 @@ impl<'m, const SIZE: usize> MachineState<'m, SIZE> {
         }
     }
     fn score(&self) -> usize {
-        let mut map: Vec<usize> = std::iter::repeat(0)
-            .take(self.machine.symbol_count)
+        let mut map: Vec<usize> = std::iter::repeat_n(0, self.machine.symbol_count)
             .collect();
         // let mut map: BTreeMap<char, usize> = BTreeMap::new();
         for c in self

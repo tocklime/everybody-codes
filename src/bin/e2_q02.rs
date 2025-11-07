@@ -31,7 +31,7 @@ fn solve_line(input: &str) -> usize {
 fn solve_circle<const REPS: u32>(input: &str) -> usize {
     let mut bolts = "RGB".chars().cycle();
     let len = input.len() * REPS as usize;
-    assert!(len % 2 == 0);
+    assert!(len.is_multiple_of(2));
     let balloons = (0..REPS).flat_map(|_| input.chars()).collect::<Vec<char>>();
     let mut balloons_a: VecDeque<char> = balloons[0..len / 2].iter().copied().collect();
     let mut balloons_b: VecDeque<char> = balloons[len / 2..].iter().copied().collect();

@@ -13,8 +13,8 @@ fn main() {
 fn solve<const PART: usize>(input: &str) -> u32 {
     let ns = input
         .split(",")
-        .map(|x| u32::from_str_radix(x, 10).unwrap())
-        .collect::<Vec<_>>();
+        .map(|x| str::parse(x).unwrap())
+        .collect::<Vec<u32>>();
     match PART {
         1 => ns.into_iter().unique().sum(),
         2 => ns.into_iter().unique().sorted().take(20).sum(),

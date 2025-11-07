@@ -151,51 +151,54 @@ fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {
                     ]
                     .to_vec();
                     let intersect = lone_intersection(&row_given, &col_given);
-                    if intersect.is_some() && intersect.unwrap() != '?' {
-                        grid[pos] = intersect.unwrap();
-                        ans.push(intersect.unwrap());
-                        keep_going = true;
-                        any_progress_at_all = true;
-                    } else {
-                        let row_known: Vec<char> = grid
-                            .values_in_direction(
-                                solve_base + Point::new(0, row),
-                                Point::new(1usize, 0),
-                            )
-                            .take(4)
-                            .map(|x| *x.1)
-                            .collect();
-                        let col_known: Vec<char> = grid
-                            .values_in_direction(
-                                solve_base + Point::new(col, 0),
-                                Point::new(0usize, 1),
-                            )
-                            .take(4)
-                            .map(|x| *x.1)
-                            .collect();
-                        let left_on_row = vec_difference(&row_given, &row_known);
-                        if left_on_row.len() == 1 && left_on_row[0] != '?' {
-                            place_character(
-                                grid,
-                                base,
-                                Point::new(2 + col, 2 + row),
-                                left_on_row[0],
-                            );
-                            ans.push(left_on_row[0]);
+                    match intersect {
+                        Some(x) if x != '?' => {
+                            grid[pos] = x;
+                            ans.push(x);
                             keep_going = true;
                             any_progress_at_all = true;
-                        } else {
-                            let left_on_col = vec_difference(&col_given, &col_known);
-                            if left_on_col.len() == 1 && left_on_col[0] != '?' {
+                        }
+                        _ => {
+                            let row_known: Vec<char> = grid
+                                .values_in_direction(
+                                    solve_base + Point::new(0, row),
+                                    Point::new(1usize, 0),
+                                )
+                                .take(4)
+                                .map(|x| *x.1)
+                                .collect();
+                            let col_known: Vec<char> = grid
+                                .values_in_direction(
+                                    solve_base + Point::new(col, 0),
+                                    Point::new(0usize, 1),
+                                )
+                                .take(4)
+                                .map(|x| *x.1)
+                                .collect();
+                            let left_on_row = vec_difference(&row_given, &row_known);
+                            if left_on_row.len() == 1 && left_on_row[0] != '?' {
                                 place_character(
                                     grid,
                                     base,
                                     Point::new(2 + col, 2 + row),
-                                    left_on_col[0],
+                                    left_on_row[0],
                                 );
-                                ans.push(left_on_col[0]);
+                                ans.push(left_on_row[0]);
                                 keep_going = true;
                                 any_progress_at_all = true;
+                            } else {
+                                let left_on_col = vec_difference(&col_given, &col_known);
+                                if left_on_col.len() == 1 && left_on_col[0] != '?' {
+                                    place_character(
+                                        grid,
+                                        base,
+                                        Point::new(2 + col, 2 + row),
+                                        left_on_col[0],
+                                    );
+                                    ans.push(left_on_col[0]);
+                                    keep_going = true;
+                                    any_progress_at_all = true;
+                                }
                             }
                         }
                     }
