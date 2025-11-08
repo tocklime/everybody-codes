@@ -13,7 +13,7 @@ const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q05_p2.t
 const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q05_p3.txt");
 
 fn main() {
-    println!("P1: {}", assess_sword(P1_INPUT));
+    println!("P1: {}", assess_fishbone(P1_INPUT));
     println!("P2: {}", find_quality_range(P2_INPUT));
     println!("P3: {}", get_checksum(P3_INPUT));
 }
@@ -97,13 +97,13 @@ fn parse(input: &str) -> Vec<Fishbone> {
         .1
 }
 
-fn assess_sword(input: &str) -> u64 {
+fn assess_fishbone(input: &str) -> u64 {
     parse(input)[0].quality()
 }
 fn get_checksum(input: &str) -> u64 {
-    let mut swords: Vec<Fishbone> = parse(input);
-    swords.sort_by_cached_key(|x| Reverse(x.make_cmp_key()));
-    swords
+    let mut fishbones: Vec<Fishbone> = parse(input);
+    fishbones.sort_by_cached_key(|x| Reverse(x.make_cmp_key()));
+    fishbones
         .iter()
         .map(|x| x.id)
         .zip(1..)
@@ -126,7 +126,7 @@ mod test {
     const EG1: &str = "58:5,3,7,8,9,10,4,5,7,8,8";
     #[test]
     fn p1_example() {
-        assert_eq!(assess_sword(EG1), 581078);
+        assert_eq!(assess_fishbone(EG1), 581078);
     }
     #[test]
     fn p2_example() {
@@ -157,7 +157,7 @@ mod test {
     }
     #[test]
     fn correct_answers() {
-        assert_eq!(assess_sword(P1_INPUT), 5682487436);
+        assert_eq!(assess_fishbone(P1_INPUT), 5682487436);
         assert_eq!(find_quality_range(P2_INPUT), 8829332495717);
         assert_eq!(get_checksum(P3_INPUT), 30970476);
     }
