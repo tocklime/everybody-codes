@@ -72,7 +72,7 @@ impl Fishbone {
     fn new(id: u64, ns: &[u64]) -> Self {
         let mut segments: Vec<Segment> = Vec::new();
         for &n in ns {
-            if segments.iter_mut().position(|x| x.insert(n)).is_none() {
+            if !segments.iter_mut().any(|x| x.insert(n)) {
                 segments.push(Segment::new(n));
             }
         }
@@ -103,12 +103,7 @@ fn assess_fishbone(input: &str) -> u64 {
 fn get_checksum(input: &str) -> u64 {
     let mut fishbones: Vec<Fishbone> = parse(input);
     fishbones.sort_by_cached_key(|x| Reverse(x.make_cmp_key()));
-    fishbones
-        .iter()
-        .map(|x| x.id)
-        .zip(1..)
-        .map(|(id, ix)| id * ix)
-        .sum()
+    fishbones.iter().zip(1..).map(|(f, ix)| f.id * ix).sum()
 }
 
 fn find_quality_range(input: &str) -> u64 {
