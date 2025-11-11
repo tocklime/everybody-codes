@@ -187,3 +187,9 @@ T > i";
         assert_eq!(solve::<3>(P3_INPUT), "2108001");
     }
 }
+
+//TODO: this one is currently pretty slow (takes several seconds for p3). Needs speeding up.
+// has the feel of a problem that will do well to be sped up with dynamic programming, but has the annoying 'only the starts that are listed' condition.
+// and also, the 'remove the duplicates made from different stems' problem.
+// I guess the latter could be fixed by pre-filtering the list so we only keep the shortest valid stems, then use those to look into the dp table. 
+// Or do it on demand with a memo.
