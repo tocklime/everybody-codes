@@ -20,4 +20,19 @@ mod test {
     fn p1_example() {
         assert_eq!(solve::<1>(EG1), 0);
     }
+    // #[test]
+    // fn p2_example() {
+    //     assert_eq!(solve::<2>(EG2), 0);
+    // }
+    // #[test]
+    // fn p3_example() {
+    //     assert_eq!(solve::<3>(EG3), 0);
+    // }
+
+    // #[test]
+    // fn correct_answers() {
+    //     assert_eq!(solve::<1>(P1_INPUT), 0);
+    //     assert_eq!(solve::<2>(P2_INPUT), 0);
+    //     assert_eq!(solve::<3>(P3_INPUT), 0);
+    // }
 }

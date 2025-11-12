@@ -45,7 +45,7 @@ fn main() {
     let target_str = best.to_string_lossy();
     let target = target_str.split(".").next().unwrap();
     let mut test = Command::new("cargo")
-        .args(["test", "--bin", target])
+        .args(["test", "--release", "--bin", target])
         .stdout(Stdio::piped())
         .spawn()
         .unwrap();
