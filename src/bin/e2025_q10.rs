@@ -262,3 +262,4 @@ SS...#.S.#S..";
         assert_eq!(solve::<3, 0>(P3_INPUT), 139924465828171);
     }
 }
+//TODO: this is slow, probably because of hashing. Also, sheep don't need to be a vec<Point> Vec<usize> would do. If a sheep gets into an unbroken run of hides to the exit, you can prune.
