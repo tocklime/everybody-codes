@@ -11,7 +11,7 @@ fn main() {
     println!("P2: {}", solve::<2>(P2_INPUT));
     println!("P3: {}", solve::<3>(P3_INPUT));
 }
-fn step1(flock: &mut [usize], c: Ordering) -> usize {
+fn do_step(flock: &mut [usize], c: Ordering) -> usize {
     let mut any_move = 0;
     for ix in 0..flock.len() - 1 {
         if flock[ix].cmp(&flock[ix+1]) == c {
@@ -36,17 +36,20 @@ fn solve<const PART: usize>(input: &str) -> usize {
     let mut step = 1;
     for round in 0.. {
         if step == 1 {
-            if step1(&mut flock, Ordering::Greater) == 0 {
+            if do_step(&mut flock, Ordering::Greater) == 0 {
                 step = 2;
             }
         }
         if step == 2 {
             if PART >= 2 {
+                //We know that the list is sorted now (otherwise step one would not be finished)
+                //now swapping back the other way, each round has the ultimate effect of incrementing one column, and decrementing another.
+                //so, the total remaining rounds is sum of difference from average divided by two (plus however many rounds step 1 took).
                 let mean = flock.iter().sum::<usize>() / flock.len();
                 let total_to_move = flock.iter().map(|x| x.abs_diff(mean)).sum::<usize>();
                 return round + (total_to_move / 2);
             }
-            step1(&mut flock, Ordering::Less);
+            do_step(&mut flock, Ordering::Less);
         }
         if PART == 1 && round == 9 {
             return flock.iter().zip(1..).map(|(count, ix)| count * ix).sum()
