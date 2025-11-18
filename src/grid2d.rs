@@ -262,6 +262,19 @@ impl<T> Grid2d<T> {
         .into_iter()
         .filter(move |x: &Coord| x.y < s.y && x.x < s.x)
     }
+    pub fn neighbours_with_self(&'_ self, p: Coord) -> impl Iterator<Item = Coord> {
+        let s = self.dim();
+        [
+            (p.y.wrapping_sub(1), p.x),//Down
+            (p.y, p.x.wrapping_sub(1)),//Left
+            (p.y, p.x), //self
+            (p.y + 1, p.x),//Up
+            (p.y, p.x + 1),//Right
+        ]
+        .map(Into::into)
+        .into_iter()
+        .filter(move |x: &Coord| x.y < s.y && x.x < s.x)
+    }
     pub fn is_edge(&self, p: Coord) -> bool {
         p.x == 0 || p.y == 0 || p.x == self.size.x - 1 || p.y == self.size.y - 1
     }

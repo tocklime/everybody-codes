@@ -1,13 +1,16 @@
+use std::collections::HashSet;
+
+use everybody_codes::{cartesian::Point, grid2d::Grid2d};
 use nom::{bytes::complete::tag, multi::separated_list0, Parser};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2_q03_p1.txt");
 const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2_q03_p2.txt");
-// const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_qXX_p3.txt");
+const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2_q03_p3.txt");
 
 fn main() {
     println!("P1: {}", solve1(P1_INPUT));
     println!("P2: {}", solve2(P2_INPUT));
-    // println!("P3: {}", solve::<3>(P3_INPUT));
+    println!("P3: {}", solve3(P3_INPUT));
 }
 
 #[derive(Debug)]
@@ -95,6 +98,30 @@ fn solve2(input: &str) -> String {
     }
     unreachable!()
 }
+fn solve3(input: &str) -> usize {
+    let (dice, grid) = input.split_once("\n\n").unwrap();
+    let dice = separated_list0(tag("\n"), Die::parse())
+        .parse(dice.trim())
+        .unwrap()
+        .1;
+    let grid : Grid2d<i64> = Grid2d::from_str(grid, |x| ((x as u8) - b'0') as i64);
+    let mut touched : Grid2d<bool> = Grid2d::from_elem(grid.dim(), false);
+    
+
+    for mut d in dice {
+        let roll1 = d.roll();
+        let mut positions : HashSet<Point<usize>> = grid.indexes().filter(|x| grid[*x] == roll1).collect();
+        positions.iter().for_each(|p| touched[*p] = true);
+        while !positions.is_empty() {
+            let roll = d.roll();
+            positions = positions.iter().flat_map(|p| {
+                grid.neighbours_with_self(*p).filter(|x| grid[*x] == roll)
+            }).collect();
+            positions.iter().for_each(|p| touched[*p] = true);
+        }
+    }
+    touched.iter().filter(|x| **x).count()
+}
 
 #[cfg(test)]
 mod test {
@@ -126,5 +153,22 @@ mod test {
 
 51257284";
         assert_eq!(solve2(EG), "1,3,4,2");
+    }
+    #[test]
+    fn p3_example() {
+        const EG: &str = "1: faces=[1,2,3,4,5,6,7,8,9] seed=13
+
+1523758297
+4822941583
+7627997892
+4397697132
+1799773472";
+        assert_eq!(solve3(EG), 33);
+    }
+    #[test]
+    fn correct_answers() {
+        assert_eq!(solve1(P1_INPUT), 632);
+        assert_eq!(solve2(P2_INPUT), "6,4,3,7,1,5,9,8,2");
+        assert_eq!(solve3(P3_INPUT), 156924);
     }
 }
