@@ -69,7 +69,7 @@ fn solve<const PART: usize, const MOVES: usize>(input: &str) -> usize {
             for t in 0..MOVES {
                 //eat sheep.
                 for (p, s) in sheep.indexed_iter_mut() {
-                    if *s && hides[p] == false && dragon_poss[t + 1][p] {
+                    if *s && !hides[p] && dragon_poss[t + 1][p] {
                         *s = false;
                         kills += 1;
                     }
@@ -85,7 +85,7 @@ fn solve<const PART: usize, const MOVES: usize>(input: &str) -> usize {
                 sheep = new_sheep;
                 //eat sheep
                 for (p, s) in sheep.indexed_iter_mut() {
-                    if *s && hides[p] == false && dragon_poss[t + 1][p] {
+                    if *s && !hides[p] && dragon_poss[t + 1][p] {
                         *s = false;
                         kills += 1;
                     }
@@ -127,6 +127,8 @@ fn solve<const PART: usize, const MOVES: usize>(input: &str) -> usize {
                                 new_sheep[o] = new_sheep[o].up();
                                 if g.get(new_sheep[o]).is_none() {
                                     //sheep escaped. prune this branch.
+                                } else if g.values_in_direction(new_sheep[o], Point::new(0isize,1)).all(|x| x.1 == &'#') {
+                                    //sheep entered unbroken run of hides to end. prune
                                 } else {
                                     *new_states.entry((d, new_sheep, false)).or_default() += count;
                                 }
