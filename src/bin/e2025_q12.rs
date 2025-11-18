@@ -12,64 +12,55 @@ fn main() {
     println!("P3: {}", solve3(P3_INPUT));
 }
 fn set_fire(g: &Grid2d<u8>, starts: Vec<Point<usize>>, alight: &mut Grid2d<bool>) {
-    let mut fringe : HashSet<Point<usize>> = starts.into_iter().collect();
+    let mut fringe: HashSet<Point<usize>> = starts.into_iter().collect();
     fringe.iter().for_each(|p| alight[*p] = true);
     while !fringe.is_empty() {
-        fringe = fringe.iter().flat_map(|x| g.neighbours(*x).filter(|p| g[*p] <= g[*x] && !alight[*p])).collect();
+        fringe = fringe
+            .iter()
+            .flat_map(|x| g.neighbours(*x).filter(|p| g[*p] <= g[*x] && !alight[*p]))
+            .collect();
         fringe.iter().for_each(|p| alight[*p] = true);
     }
-
+}
+fn find_best(g: &Grid2d<u8>, already_alight: &Grid2d<bool>) -> (Point<usize>, Grid2d<bool>) {
+    let (_count, alight, point) = g
+        .indexes()
+        .map(|x| {
+            let mut alight = already_alight.clone();
+            set_fire(&g, vec![x], &mut alight);
+            let count = alight.iter().filter(|x| **x).count();
+            (count, alight, x)
+        })
+        .max_by_key(|z| z.0)
+        .unwrap();
+    (point, alight)
 }
 fn solve3(input: &str) -> usize {
-    let g : Grid2d<u8> = Grid2d::from_str(input, |x| (x as u8) - b'0');
-    //1.
-    let best1 = g.indexes().map(|x| {
-        let mut alight = Grid2d::from_elem(g.dim(), false);
-        set_fire(&g, vec![x], &mut alight);
-        let count = alight.iter().filter(|x| **x).count();
-        (count, alight, x)
-    }).max_by_key(|z| z.0).unwrap();
-    println!("Best is {:?}: {}",best1.2, best1.0);
-    let alight_start = best1.1;
-    let best2 = g.indexes().map(|x| {
-        let mut alight = alight_start.clone();
-        set_fire(&g, vec![x], &mut alight);
-        let count = alight.iter().filter(|x| **x).count();
-        (count, alight, x)
-    }).max_by_key(|x| x.0).unwrap();
-    println!("Best2 is {:?}: {}",best2.2, best2.0);
-    let alight_start = best2.1;
-    let best3 = g.indexes().map(|x| {
-        let mut alight = alight_start.clone();
-        set_fire(&g, vec![x], &mut alight);
-        let count = alight.iter().filter(|x| **x).count();
-        (count, alight, x)
-    }).max_by_key(|x| x.0).unwrap();
-    println!("Best3 is {:?}: {}",best3.2, best3.0);
-    let mut alight_final = Grid2d::from_elem(g.dim(), false);
-    set_fire(&g, vec![
-        best1.2,best2.2,best3.2
-    ], &mut alight_final);
-    println!("{}", alight_final.to_string_with(|x| (if *x { "#"} else {"."}).to_string()));
-    alight_final.iter().filter(|x|**x).count()
+    let g: Grid2d<u8> = Grid2d::from_str(input, |x| (x as u8) - b'0');
+    let alight = Grid2d::from_elem(g.dim(), false);
+    (0..3)
+        .fold(alight, |alight, _| find_best(&g, &alight).1)
+        .iter()
+        .filter(|x| **x)
+        .count()
 }
+
 fn solve<const PART: usize>(input: &str) -> usize {
-    let g : Grid2d<u8> = Grid2d::from_str(input, |x| (x as u8) - b'0');
+    let g: Grid2d<u8> = Grid2d::from_str(input, |x| (x as u8) - b'0');
     let fringe = match PART {
-        1 => vec![Point::new(0,0)],
-        2 => vec![Point::new(0,0), g.dim() - Point::new(1,1)],
-        _ => unimplemented!()
+        1 => vec![Point::new(0, 0)],
+        2 => vec![Point::new(0, 0), g.dim() - Point::new(1, 1)],
+        _ => unimplemented!(),
     };
     let mut alight = Grid2d::from_elem(g.dim(), false);
     set_fire(&g, fringe, &mut alight);
     alight.iter().filter(|x| **x).count()
 }
 
-
 #[cfg(test)]
 mod test {
     use super::*;
-    const EG1 : &str = "989611
+    const EG1: &str = "989611
 857782
 746543
 766789";
@@ -77,10 +68,24 @@ mod test {
     fn p1_example() {
         assert_eq!(solve::<1>(EG1), 16);
     }
-    // #[test]
-    // fn p2_example() {
-    //     assert_eq!(solve::<2>(EG2), 0);
-    // }
+    #[test]
+    fn p2_example() {
+        assert_eq!(
+            solve::<2>(
+                "9589233445
+9679121695
+8469121876
+8352919876
+7342914327
+7234193437
+6789193538
+6781219648
+5691219769
+5443329859"
+            ),
+            58
+        );
+    }
     #[test]
     fn p3_example() {
         const EG1: &str = "5411
@@ -102,10 +107,10 @@ mod test {
         assert_eq!(solve3(EG2), 133);
     }
 
-    // #[test]
-    // fn correct_answers() {
-    //     assert_eq!(solve::<1>(P1_INPUT), 0);
-    //     assert_eq!(solve::<2>(P2_INPUT), 0);
-    //     assert_eq!(solve::<3>(P3_INPUT), 0);
-    // }
+    #[test]
+    fn correct_answers() {
+        assert_eq!(solve::<1>(P1_INPUT), 251);
+        assert_eq!(solve::<2>(P2_INPUT), 5640);
+        assert_eq!(solve3(P3_INPUT), 4208);
+    }
 }
