@@ -14,17 +14,17 @@ fn main() {
 fn finish_name(
     seen: &mut HashSet<String>,
     rules: &HashMap<char, Vec<char>>,
-    name: String
+    name: String,
 ) -> HashSet<String> {
     let mut ans = HashSet::new();
     if !seen.insert(name.clone()) {
-        return HashSet::new()
+        return HashSet::new();
     }
     if name.len() >= 7 {
         ans.insert(name.clone());
     }
     match rules.get(&name.chars().last().unwrap()) {
-        None => {},
+        None => {}
         Some(r) => {
             if name.len() < 11 {
                 for opt in r {
@@ -67,14 +67,14 @@ fn solve<const PART: usize>(input: &str) -> String {
                 return false;
             }
         }
-        return true;
+        true
     };
     match PART {
         1 => names.iter().find(match_name).unwrap().to_string(),
         2 => names
             .iter()
             .positions(|x| match_name(&x))
-            .map(|x| x+1)
+            .map(|x| x + 1)
             .sum::<usize>()
             .to_string(),
         3 => {
@@ -86,13 +86,12 @@ fn solve<const PART: usize>(input: &str) -> String {
                     if !match_name(&n) {
                         return None;
                     }
-                    let names = finish_name(&mut seen, &rules,n.to_string());
+                    let names = finish_name(&mut seen, &rules, n.to_string());
                     Some(names)
                 })
                 .flatten()
                 .collect::<HashSet<String>>()
-                .into_iter()
-                .count()
+                .len()
                 .to_string()
         }
         _ => unimplemented!(),
@@ -191,5 +190,5 @@ T > i";
 //TODO: this one is currently pretty slow (takes several seconds for p3). Needs speeding up.
 // has the feel of a problem that will do well to be sped up with dynamic programming, but has the annoying 'only the starts that are listed' condition.
 // and also, the 'remove the duplicates made from different stems' problem.
-// I guess the latter could be fixed by pre-filtering the list so we only keep the shortest valid stems, then use those to look into the dp table. 
+// I guess the latter could be fixed by pre-filtering the list so we only keep the shortest valid stems, then use those to look into the dp table.
 // Or do it on demand with a memo.

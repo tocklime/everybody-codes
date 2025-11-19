@@ -101,6 +101,7 @@ fn solve<const PART: usize, const MOVES: usize>(input: &str) -> usize {
                 .collect();
             let hides = g.map(|_, &x| x == '#');
             let start = (d, sheep_pos, true);
+            #[allow(clippy::type_complexity)]
             let mut state: HashMap<(Point<usize>, Vec<Point<usize>>, bool), usize> = HashMap::new();
             state.insert(start, 1);
             let mut solutions = 0;

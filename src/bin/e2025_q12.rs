@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use everybody_codes::{cartesian::Point, grid2d::Grid2d};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q12_p1.txt");
@@ -12,22 +10,27 @@ fn main() {
     println!("P3: {}", solve3(P3_INPUT));
 }
 fn set_fire(g: &Grid2d<u8>, starts: Vec<Point<usize>>, alight: &mut Grid2d<bool>) {
-    let mut fringe: HashSet<Point<usize>> = starts.into_iter().collect();
+    let mut fringe: Vec<Point<usize>> = starts.clone();
     fringe.iter().for_each(|p| alight[*p] = true);
-    while !fringe.is_empty() {
-        fringe = fringe
-            .iter()
-            .flat_map(|x| g.neighbours(*x).filter(|p| g[*p] <= g[*x] && !alight[*p]))
-            .collect();
-        fringe.iter().for_each(|p| alight[*p] = true);
+    while let Some(x) = fringe.pop() {
+        for n in g.neighbours(x) {
+            if g[n] <= g[x] && !alight[n] {
+                alight[n] = true;
+                fringe.push(n);
+            }
+        }
     }
 }
 fn find_best(g: &Grid2d<u8>, already_alight: &Grid2d<bool>) -> (Point<usize>, Grid2d<bool>) {
     let (_count, alight, point) = g
         .indexes()
+        .filter(|&p| { 
+            //only consider those that are bigger than all their (unlit) neighbours.
+            g.neighbours(p).all(|x| already_alight[x] || g[x] <= g[p])
+        })
         .map(|x| {
             let mut alight = already_alight.clone();
-            set_fire(&g, vec![x], &mut alight);
+            set_fire(g, vec![x], &mut alight);
             let count = alight.iter().filter(|x| **x).count();
             (count, alight, x)
         })

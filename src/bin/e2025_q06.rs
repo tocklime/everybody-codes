@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, usize};
+use std::collections::VecDeque;
 
 use everybody_codes::collections::VecLookup;
 
@@ -52,7 +52,7 @@ fn count_novices<const REPEATS: usize, const RANGE: usize>(chars: &[u8]) -> usiz
             pos += 1;
         }
         if rep * chars.len() > RANGE {
-            //pos-RANGE was past the start at the beginning of this loop. 
+            //pos-RANGE was past the start at the beginning of this loop.
             //All future iterations of this outer loop will calculate this value.
             //so we short circuit the rest.
             total += total_this_time * (REPEATS - rep);

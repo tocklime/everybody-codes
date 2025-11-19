@@ -35,10 +35,8 @@ fn solve<const PART: usize>(input: &str) -> usize {
     let mut flock : Vec<usize> = input.lines().map(|x| x.parse().unwrap()).collect();
     let mut step = 1;
     for round in 0.. {
-        if step == 1 {
-            if do_step(&mut flock, Ordering::Greater) == 0 {
-                step = 2;
-            }
+        if step == 1 && do_step(&mut flock, Ordering::Greater) == 0 {
+            step = 2;
         }
         if step == 2 {
             if PART >= 2 {

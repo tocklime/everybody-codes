@@ -44,14 +44,14 @@ fn solve<const PART: usize>(input: &str) -> usize {
             let max_match = if len == 128 { u128::MAX } else {(1<<len) - 1};
             let mut total = 0;
             for child_ix in 0..ls.len() {
-                let mut this_child_matches = HashMap::new();
+                let mut this_child_matches = HashMap::<usize, u128>::new();
                 
                 for parent_ix in 0..ls.len() {
                     if child_ix == parent_ix {
                         continue;
                     }
                     let same = compare(ls[child_ix].split_once(':').unwrap().1.chars(), ls[parent_ix].split_once(':').unwrap().1.chars());
-                    let other_p = this_child_matches.iter().find(|&(_,v)| v | &same == max_match);
+                    let other_p = this_child_matches.iter().find(|&(_,v)| v | same == max_match);
                     if let Some(other_p) = other_p {
                         //found parent.
                         total += (same.count_ones() * other_p.1.count_ones()) as usize;
@@ -77,7 +77,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
                     let (cname, cdna) = ls[child_ix].split_once(':').unwrap();
                     let (pname, pdna) = ls[parent_ix].split_once(':').unwrap();
                     let same = compare(cdna.chars(), pdna.chars());
-                    let other_p = this_child_matches.iter().find(|&(k,v)| v | &same == max_match && k != &child_ix);
+                    let other_p = this_child_matches.iter().find(|&(k,v)| v | same == max_match && k != &child_ix);
                     if let Some((&other_p_ix, _)) = other_p {
                         //found parent.
                         let cid: u32 = cname.parse().unwrap();
