@@ -224,6 +224,19 @@ impl<T> Grid2d<T> {
         .into_iter()
         .map(move |x: Coord| (x.y < s.y && x.x < s.x).then_some(x))
     }
+    pub fn diagonals_and_self(&'_ self, p: Coord) -> impl Iterator<Item = Coord> {
+        let s = self.dim();
+        [
+            (p.y.wrapping_sub(1), p.x + 1),             //UR
+            (p.y + 1, p.x + 1),                         //DR
+            (p.y, p.x), //self
+            (p.y + 1, p.x.wrapping_sub(1)),             //DL
+            (p.y.wrapping_sub(1), p.x.wrapping_sub(1)), //UL
+        ]
+        .map(Into::into)
+        .into_iter()
+        .filter(move |x: &Coord| x.y < s.y && x.x < s.x)
+    }
     pub fn neighbours_with_diagonals(&'_ self, p: Coord) -> impl Iterator<Item = Coord> {
         let s = self.dim();
         [
