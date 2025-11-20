@@ -1,8 +1,5 @@
 use std::{
-    convert::Into,
-    fmt::{Debug, Display, Write},
-    iter,
-    ops::{Index, IndexMut},
+    borrow::Borrow, convert::Into, fmt::{Debug, Display, Write}, iter, ops::{Index, IndexMut}
 };
 
 use itertools::Itertools;
@@ -115,6 +112,9 @@ impl<T: Copy> Grid2d<T> {
 impl<T: PartialEq> Grid2d<T> {
     pub fn find_elem(&self, elem: &T) -> Option<Coord> {
         self.indexed_iter().find(|e| e.1 == elem).map(|x| x.0)
+    }
+    pub fn count_elem<E : Borrow<T>>(&self, elem: E) -> usize {
+        self.iter().filter(|x| *x == elem.borrow()).count()
     }
 }
 impl<T> Grid2d<T> {
