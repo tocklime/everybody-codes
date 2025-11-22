@@ -24,7 +24,7 @@ fn solve3(input: &str) -> usize {
         if g == grid_1 {
             let loops = N / round;
             total_sum *= loops;
-            round = round * loops;
+            round *= loops;
         } else if g.sub_grid_copied(base, reference.dim()) == reference {
             total_sum += g.count_elem(true);
         }
