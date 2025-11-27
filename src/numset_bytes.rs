@@ -176,7 +176,7 @@ where
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct NumSetIter<const BYTES: usize> {
     n: NumSet<BYTES>,
     pow_fwd: usize,
