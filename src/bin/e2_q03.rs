@@ -80,16 +80,14 @@ fn solve2(input: &str) -> String {
     let mut finishers = Vec::new();
     for _turn in 1.. {
         for (ix, d) in dice.iter_mut().enumerate() {
-            if let Some(pos) = &mut positions[ix] {
-                if *pos < track.len() {
-                    let roll = d.roll();
-                    if roll == track[*pos] {
-                        *pos += 1;
-                        if *pos >= track.len() {
-                            finishers.push(format!("{}", d.id));
-                            if finishers.len() == player_count {
-                                return finishers.join(",");
-                            }
+            if let Some(pos) = &mut positions[ix] && *pos < track.len() {
+                let roll = d.roll();
+                if roll == track[*pos] {
+                    *pos += 1;
+                    if *pos >= track.len() {
+                        finishers.push(format!("{}", d.id));
+                        if finishers.len() == player_count {
+                            return finishers.join(",");
                         }
                     }
                 }
