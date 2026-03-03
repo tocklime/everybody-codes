@@ -169,7 +169,7 @@ impl<T> Grid2d<T> {
     pub fn dim(&self) -> Coord {
         self.size
     }
-    pub fn indexes(&'_ self) -> impl Iterator<Item = Coord> {
+    pub fn indexes(&'_ self) -> impl Iterator<Item = Coord> + use<T> {
         let max = self.size;
         (0..max.y).cartesian_product(0..max.x).map(Into::into)
     }
@@ -237,7 +237,7 @@ impl<T> Grid2d<T> {
         .into_iter()
         .filter(move |x: &Coord| x.y < s.y && x.x < s.x)
     }
-    pub fn neighbours_with_diagonals(&'_ self, p: Coord) -> impl Iterator<Item = Coord> {
+    pub fn neighbours_with_diagonals(&'_ self, p: Coord) -> impl Iterator<Item = Coord> + use<T> {
         let s = self.dim();
         [
             (p.y.wrapping_sub(1), p.x),                 //Up
@@ -263,7 +263,7 @@ impl<T> Grid2d<T> {
         ]
         .map(|x| x.map(Into::into))
     }
-    pub fn neighbours(&'_ self, p: Coord) -> impl Iterator<Item = Coord> {
+    pub fn neighbours(&'_ self, p: Coord) -> impl Iterator<Item = Coord> + use<T> {
         let s = self.dim();
         [
             (p.y.wrapping_sub(1), p.x),//Down

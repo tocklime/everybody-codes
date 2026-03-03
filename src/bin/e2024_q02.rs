@@ -82,7 +82,7 @@ fn print_grid(grid: &[Vec<u8>], highlighted: &HashSet<(usize, usize)>) {
         for (c, &byte) in row.iter().enumerate() {
             let ch: char = char::from(byte);
             if highlighted.contains(&(r, c)) {
-                print!("{}", ansi_term::Color::Red.paint(ch.to_string()));
+                print!("{}", nu_ansi_term::Color::Red.paint(ch.to_string()));
             } else {
                 print!("{}", ch);
             }
