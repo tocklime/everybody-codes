@@ -59,13 +59,13 @@ fn solve<const PART: usize>(input: &str) -> usize {
         // }));
         h_grid = new_grid;
     }
-    let x = h_grid
+    
+    h_grid
         .iter()
         .flatten()
         .filter_map(|x| *x)
         .max()
-        .unwrap();
-    x
+        .unwrap()
 }
 fn solve2(input: &str) -> usize {
     let g = Grid2d::from_str(input, |x| x);
@@ -78,11 +78,10 @@ fn solve2(input: &str) -> usize {
         |(p, leg, height, dir)| {
             g.neighbours(*p).enumerate().filter_map(|(d_ix, n)| {
                 let facing_dir = (d_ix + 2) % 4;
-                if let Some(d) = dir {
-                    if d_ix == *d {
+                if let Some(d) = dir
+                    && d_ix == *d {
                         return None;
                     }
-                }
                 let (new_leg, new_h) = match g[n] {
                     '+' => (*leg, Some(height + 1)),
                     '-' => (*leg, Some(height - 2)),

@@ -80,7 +80,8 @@ fn solve<const PART: usize>(input: &str) -> u64 {
         3 => eni_sum,
         _ => unimplemented!()
     };
-    let best = input
+    
+    input
         .lines()
         .map(|l| {
             let ns = get_matches_from_str(l, nom::character::complete::u64);
@@ -91,8 +92,7 @@ fn solve<const PART: usize>(input: &str) -> u64 {
             }
         })
         .max()
-        .unwrap();
-    best
+        .unwrap()
 }
 
 #[cfg(test)]

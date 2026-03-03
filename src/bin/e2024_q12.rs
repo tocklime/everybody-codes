@@ -47,7 +47,8 @@ fn solve<const PART: usize>(input: &str) -> isize {
     let max_power = max_range / 2 + 1;
     for t in targets {
         let shot = (1..max_power).find_map(|p| {
-            let n = catapults.iter().find_map(|c| {
+            
+            catapults.iter().find_map(|c| {
                 let s = make_shot(c.0, p);
                 if hits(s, t.0) {
                     let mult = if *t.1 == 'H' { 2 } else { 1 };
@@ -55,8 +56,7 @@ fn solve<const PART: usize>(input: &str) -> isize {
                 } else {
                     None
                 }
-            });
-            n
+            })
         });
         if let Some(shot) = shot {
             ans += shot;

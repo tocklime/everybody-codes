@@ -14,7 +14,7 @@ fn main() {
 }
 
 fn tri_neighbours<'a>(g: &'a Grid2d<char>, pos: Coord) -> impl Iterator<Item = Coord> + use<'a> {
-    let flat_top = (pos.x + pos.y) % 2 != 0;
+    let flat_top = !(pos.x + pos.y).is_multiple_of(2);
     let ns = if flat_top {
         [pos.up(), pos.left(), pos.right()]
     } else {
@@ -52,8 +52,8 @@ fn solve<const PART: usize>(input: &str) -> usize {
                 .map(|(ix, c)| {
                     if *c == 'T' {
                         let ns = tri_neighbours(&g, ix);
-                        let c = ns.into_iter().filter(|x| g[*x] == 'T').count();
-                        c
+                        
+                        ns.into_iter().filter(|x| g[*x] == 'T').count()
                     } else {
                         0
                     }
@@ -76,7 +76,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
             let s = g.find_elem(&'S').unwrap();
             let g2 = rotate_grid(&g);
             let g1 = rotate_grid(&g2);
-            let gs = vec![g, g1, g2];
+            let gs = [g, g1, g2];
             let path = pathfinding::directed::bfs::bfs(
                 &(s, 0),
                 |(p, grid_ix)| {

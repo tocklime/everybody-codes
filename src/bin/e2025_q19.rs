@@ -30,7 +30,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
             } else {
                 &columns[next_wall_ix..]
             };
-            if next_walls.len() == 0 {
+            if next_walls.is_empty() {
                 return vec![((x+1,y-1, false),0)]
             }
             let dist_to_next_wall = next_walls[0][0] - x;

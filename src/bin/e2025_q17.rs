@@ -26,7 +26,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
             r_destruction(10)
         }
         2 => {
-            let destrs = (0..).map(|r| r_destruction(r)).tuple_windows().map(|(a,b)| b-a ).take_while(|x| *x > 0).collect::<Vec<usize>>();
+            let destrs = (0..).map(r_destruction).tuple_windows().map(|(a,b)| b-a ).take_while(|x| *x > 0).collect::<Vec<usize>>();
             let (a,b) = destrs.iter().zip(1..).max().unwrap();
             a*b
 
@@ -36,7 +36,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
                 let max_time = (r+1) * 30;
                 let start = g.find_elem(&'S').unwrap();
                 let d = pathfinding::directed::astar::astar(&(start,0), |(p, stage)| {
-                    g.neighbours(*p).into_iter().filter(|n| {
+                    g.neighbours(*p).filter(|n| {
                         !f(r,*n)
                     }).map(|n| {
                         let new_stage = match stage {

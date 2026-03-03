@@ -80,7 +80,7 @@ fn calc_bright(plants: &[Plant], id: i64, known: &mut VecLookup<i64>) -> i64 {
             if let Some(other_p) = c.connected {
                 c.thickness * calc_bright(plants, other_p, known)
             } else {
-                c.thickness * 1
+                c.thickness
             }
         })
         .sum();
@@ -99,21 +99,20 @@ fn find_max(plants: &[Plant]) -> i64 {
             base_plants_to = p.id;
         } else {
             for c in &p.connections {
-                if let Some(prev) = c.connected {
-                    if prev <= base_plants_to {
+                if let Some(prev) = c.connected
+                    && prev <= base_plants_to {
                         to_test
                             .entry(prev as usize)
                             .or_default().insert(if c.thickness > 0 { 1usize } else { 0 });
                     }
-                }
             }
         }
     }
-    let max = to_test.values().map(|x| x.iter()).multi_cartesian_product().map(|x| {
+    
+    to_test.values().map(|x| x.iter()).multi_cartesian_product().map(|x| {
         let xv : Vec<i64> = x.iter().map(|x| *x as i64).collect();
-        run_test(&plants, &xv)
-    }).max().unwrap();
-    max
+        run_test(plants, &xv)
+    }).max().unwrap()
 }
 fn run_test(plants: &[Plant], test: &[i64]) -> i64 {
     let mut known: VecLookup<i64> = Default::default();
@@ -121,7 +120,7 @@ fn run_test(plants: &[Plant], test: &[i64]) -> i64 {
         known.insert(n.1, *n.0);
     }
     let last_plant = plants.last().unwrap().id;
-    calc_bright(&plants, last_plant, &mut known)
+    calc_bright(plants, last_plant, &mut known)
 }
 fn solve<const PART: usize>(input: &str) -> i64 {
     let (input, plants) = separated_list1(tag("\n\n"), Plant::parse())
