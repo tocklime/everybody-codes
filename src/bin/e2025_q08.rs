@@ -9,10 +9,10 @@ const P3_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q08_p3.t
 
 fn main() {
     println!("P1: {}", solve::<1, 32>(P1_INPUT));
-    println!("P2: {}", solve::<2,256>(P2_INPUT));
-    println!("P3: {}", solve::<3,256>(P3_INPUT));
+    println!("P2: {}", solve::<2, 256>(P2_INPUT));
+    println!("P3: {}", solve::<3, 256>(P3_INPUT));
 }
-fn sort(a: usize, b: usize) -> (usize,usize) {
+fn sort(a: usize, b: usize) -> (usize, usize) {
     (a.min(b), a.max(b))
 }
 fn solve<const PART: usize, const NAILS: usize>(input: &str) -> usize {
@@ -26,15 +26,15 @@ fn solve<const PART: usize, const NAILS: usize>(input: &str) -> usize {
                 .count()
         }
         2 => {
-            let mut done_pairs : HashMap<usize, VecLookup<usize>> = HashMap::new();
+            let mut done_pairs: HashMap<usize, VecLookup<usize>> = HashMap::new();
             let mut total_crossings = 0;
-            for (&a,&b) in ns.iter().tuple_windows() {
-                let (sm,bi) = sort(a,b);
-                let r = sm+1..bi;
+            for (&a, &b) in ns.iter().tuple_windows() {
+                let (sm, bi) = sort(a, b);
+                let r = sm + 1..bi;
                 let mut crossed_now = 0;
                 for x in r {
                     let x = done_pairs.entry(x).or_default();
-                    for y in (1..sm).chain(bi+1..=NAILS) {
+                    for y in (1..sm).chain(bi + 1..=NAILS) {
                         crossed_now += *x.entry(y).or_default();
                     }
                 }
@@ -47,20 +47,20 @@ fn solve<const PART: usize, const NAILS: usize>(input: &str) -> usize {
             total_crossings
         }
         3 => {
-            let mut done_pairs : HashMap<usize, VecLookup<usize>> = HashMap::new();
+            let mut done_pairs: HashMap<usize, VecLookup<usize>> = HashMap::new();
             let mut max_crossings = 0;
-            for (&a,&b) in ns.iter().tuple_windows() {
+            for (&a, &b) in ns.iter().tuple_windows() {
                 *done_pairs.entry(a).or_default().entry(b).or_default() += 1;
                 *done_pairs.entry(b).or_default().entry(a).or_default() += 1;
             }
 
             for sm in 1..=NAILS {
                 for bi in sm..=NAILS {
-                    let r = sm+1..bi;
+                    let r = sm + 1..bi;
                     let mut crossed_now = *done_pairs.entry(sm).or_default().entry(bi).or_default();
                     for x in r {
                         let x = done_pairs.entry(x).or_default();
-                        for y in (1..sm).chain(bi+1..=NAILS) {
+                        for y in (1..sm).chain(bi + 1..=NAILS) {
                             crossed_now += *x.entry(y).or_default();
                         }
                     }
@@ -88,11 +88,11 @@ mod test {
     }
     #[test]
     fn p2_example() {
-        assert_eq!(solve::<2,8>(EG2), 21);
+        assert_eq!(solve::<2, 8>(EG2), 21);
     }
     #[test]
     fn p3_example() {
-        assert_eq!(solve::<3,8>(EG3), 7);
+        assert_eq!(solve::<3, 8>(EG3), 7);
     }
 
     #[test]

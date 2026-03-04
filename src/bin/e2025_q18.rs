@@ -1,8 +1,8 @@
 use everybody_codes::{collections::VecLookup, numset_bytes::NumSet};
 use itertools::Itertools;
 use nom::{
-    branch::alt, bytes::tag, character::complete::i64, combinator::eof, multi::separated_list1,
-    Parser,
+    Parser, branch::alt, bytes::tag, character::complete::i64, combinator::eof,
+    multi::separated_list1,
 };
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q18_p1.txt");
@@ -23,8 +23,7 @@ struct Plant {
 }
 
 impl Branch {
-    fn parse<'a>(
-    ) -> impl Parser<&'a str, Output = Self, Error = nom::error::Error<&'a str>> {
+    fn parse<'a>() -> impl Parser<&'a str, Output = Self, Error = nom::error::Error<&'a str>> {
         alt((
             (tag("- free branch with thickness "), i64).map(move |(_, i)| Self {
                 thickness: i,
@@ -100,19 +99,27 @@ fn find_max(plants: &[Plant]) -> i64 {
         } else {
             for c in &p.connections {
                 if let Some(prev) = c.connected
-                    && prev <= base_plants_to {
-                        to_test
-                            .entry(prev as usize)
-                            .or_default().insert(if c.thickness > 0 { 1usize } else { 0 });
-                    }
+                    && prev <= base_plants_to
+                {
+                    to_test
+                        .entry(prev as usize)
+                        .or_default()
+                        .insert(if c.thickness > 0 { 1usize } else { 0 });
+                }
             }
         }
     }
-    
-    to_test.values().map(|x| x.iter()).multi_cartesian_product().map(|x| {
-        let xv : Vec<i64> = x.iter().map(|x| *x as i64).collect();
-        run_test(plants, &xv)
-    }).max().unwrap()
+
+    to_test
+        .values()
+        .map(|x| x.iter())
+        .multi_cartesian_product()
+        .map(|x| {
+            let xv: Vec<i64> = x.iter().map(|x| *x as i64).collect();
+            run_test(plants, &xv)
+        })
+        .max()
+        .unwrap()
 }
 fn run_test(plants: &[Plant], test: &[i64]) -> i64 {
     let mut known: VecLookup<i64> = Default::default();
@@ -154,14 +161,13 @@ fn solve<const PART: usize>(input: &str) -> i64 {
             .sum(),
         3 => {
             let max = find_max(&plants);
-            tests.iter().map(|t| {
-                let v = run_test(&plants, &t.cases);
-                if v > 0 {
-                    max - v
-                } else {
-                    0
-                }
-            }).sum()
+            tests
+                .iter()
+                .map(|t| {
+                    let v = run_test(&plants, &t.cases);
+                    if v > 0 { max - v } else { 0 }
+                })
+                .sum()
         }
         _ => todo!(),
     }

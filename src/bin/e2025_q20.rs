@@ -52,7 +52,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
                 .map(|(ix, c)| {
                     if *c == 'T' {
                         let ns = tri_neighbours(&g, ix);
-                        
+
                         ns.into_iter().filter(|x| g[*x] == 'T').count()
                     } else {
                         0

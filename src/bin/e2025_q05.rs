@@ -3,9 +3,9 @@ use std::cmp::Reverse;
 use everybody_codes::nums::digits;
 use itertools::Itertools;
 use nom::{
+    Parser,
     bytes::complete::tag,
     character::complete::{self, newline},
-    Parser,
 };
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q05_p1.txt");

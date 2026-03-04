@@ -59,13 +59,8 @@ fn solve<const PART: usize>(input: &str) -> usize {
         // }));
         h_grid = new_grid;
     }
-    
-    h_grid
-        .iter()
-        .flatten()
-        .filter_map(|x| *x)
-        .max()
-        .unwrap()
+
+    h_grid.iter().flatten().filter_map(|x| *x).max().unwrap()
 }
 fn solve2(input: &str) -> usize {
     let g = Grid2d::from_str(input, |x| x);
@@ -94,20 +89,20 @@ fn solve2(input: &str) -> usize {
                 new_h.map(|h| ((n, new_leg, h, Some(facing_dir)),1))
             }).collect_vec()
         },
-        |(p,leg,_,_)| 
+        |(p,leg,_,_)|
             // if h < 10000 { 10000 - h } else { 0} + //time to get necessary height
             check_points.get(*leg).map(|t| p.manhattan_unsigned(t)).unwrap_or_default() + //time to get to next checkpoint
             check_points.iter().skip(*leg).tuple_windows().map(|(a,b)| a.manhattan_unsigned(b)).sum::<usize>(),
         |(p, leg, height, _dir)| *p == start && *leg == 3 && *height >= 10000,
     ).unwrap();
-    for (ix,(p,leg,height,dir)) in path.iter().enumerate() {
+    for (ix, (p, leg, height, dir)) in path.iter().enumerate() {
         println!("At time {ix} at {p} leg {leg} height {height}, dir {dir:?}");
     }
     cost
 }
 
 // fn solve3(input: &str, initial_height: usize) -> usize {
-//     //to nearest run of +s: 
+//     //to nearest run of +s:
 //     let remaining_height = initial_height - init_left;
 //     //grid height is 12, with 3 '+'s.
 //     //so each grid we lose 12, and gain 6. or lose 6.
@@ -143,14 +138,14 @@ mod test {
     fn p2_example() {
         assert_eq!(solve2(EG2), 24);
     }
-//     const EG3 : &str = "#......S......#
-// #-...+...-...+#
-// #.............#
-// #..+...-...+..#
-// #.............#
-// #-...-...+...-#
-// #.............#
-// #..#...+...+..#";
+    //     const EG3 : &str = "#......S......#
+    // #-...+...-...+#
+    // #.............#
+    // #..+...-...+..#
+    // #.............#
+    // #-...-...+...-#
+    // #.............#
+    // #..#...+...+..#";
     // #[test]
     // fn p3_example() {
     //     assert_eq!(solve3(EG3,     1),          1);

@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use everybody_codes::{cartesian::Point, grid2d::Grid2d};
-use nom::{bytes::complete::tag, multi::separated_list0, Parser};
+use nom::{Parser, bytes::complete::tag, multi::separated_list0};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2_q03_p1.txt");
 const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2_q03_p2.txt");
@@ -80,7 +80,9 @@ fn solve2(input: &str) -> String {
     let mut finishers = Vec::new();
     for _turn in 1.. {
         for (ix, d) in dice.iter_mut().enumerate() {
-            if let Some(pos) = &mut positions[ix] && *pos < track.len() {
+            if let Some(pos) = &mut positions[ix]
+                && *pos < track.len()
+            {
                 let roll = d.roll();
                 if roll == track[*pos] {
                     *pos += 1;
@@ -102,19 +104,20 @@ fn solve3(input: &str) -> usize {
         .parse(dice.trim())
         .unwrap()
         .1;
-    let grid : Grid2d<i64> = Grid2d::from_str(grid, |x| ((x as u8) - b'0') as i64);
-    let mut touched : Grid2d<bool> = Grid2d::from_elem(grid.dim(), false);
-    
+    let grid: Grid2d<i64> = Grid2d::from_str(grid, |x| ((x as u8) - b'0') as i64);
+    let mut touched: Grid2d<bool> = Grid2d::from_elem(grid.dim(), false);
 
     for mut d in dice {
         let roll1 = d.roll();
-        let mut positions : HashSet<Point<usize>> = grid.indexes().filter(|x| grid[*x] == roll1).collect();
+        let mut positions: HashSet<Point<usize>> =
+            grid.indexes().filter(|x| grid[*x] == roll1).collect();
         positions.iter().for_each(|p| touched[*p] = true);
         while !positions.is_empty() {
             let roll = d.roll();
-            positions = positions.iter().flat_map(|p| {
-                grid.neighbours_with_self(*p).filter(|x| grid[*x] == roll)
-            }).collect();
+            positions = positions
+                .iter()
+                .flat_map(|p| grid.neighbours_with_self(*p).filter(|x| grid[*x] == roll))
+                .collect();
             positions.iter().for_each(|p| touched[*p] = true);
         }
     }

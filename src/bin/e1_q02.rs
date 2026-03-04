@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 
-use nom::{branch::alt, bytes::complete::tag, Parser};
+use nom::{Parser, branch::alt, bytes::complete::tag};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e1_q02_p1.txt");
 const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e1_q02_p2.txt");
@@ -33,8 +33,16 @@ impl Tree {
         if self.id == id {
             vec![self]
         } else {
-            let mut left = self.left.as_mut().map(|t| t.find_mut(id)).unwrap_or_default();
-            let right =  self.right.as_mut().map(|t| t.find_mut(id)).unwrap_or_default();
+            let mut left = self
+                .left
+                .as_mut()
+                .map(|t| t.find_mut(id))
+                .unwrap_or_default();
+            let right = self
+                .right
+                .as_mut()
+                .map(|t| t.find_mut(id))
+                .unwrap_or_default();
             left.extend(right);
             left
         }
@@ -111,7 +119,7 @@ enum Instruction {
 
 impl Instruction {
     fn lr_value<'a>(
-        id: u32, 
+        id: u32,
         tag_name: &'static str,
     ) -> impl Parser<&'a str, Output = Tree, Error = Err<'a>> {
         (tag(tag_name), tag("=["), Tree::parse(id), tag("]")).map(|(_, _, t, _)| t)
@@ -120,10 +128,8 @@ impl Instruction {
         |input: &'a str| {
             let (input, _) = tag("ADD id=")(input)?;
             let (input, id) = nom::character::complete::u32(input)?;
-            let (input, (left,right)) = (
-                Self::lr_value(id, " left"),
-                Self::lr_value(id, " right"),
-            ).parse(input)?;
+            let (input, (left, right)) =
+                (Self::lr_value(id, " left"), Self::lr_value(id, " right")).parse(input)?;
             Ok((input, Self::Add { left, right }))
         }
     }
@@ -164,7 +170,7 @@ fn solve<const PART: usize>(input: &str) -> String {
                 let a = iter.next().unwrap();
                 let b = iter.next().unwrap();
                 if PART == 3 {
-                    std::mem::swap(a,b);
+                    std::mem::swap(a, b);
                 } else {
                     std::mem::swap(&mut a.label, &mut b.label);
                     std::mem::swap(&mut a.rank, &mut b.rank);
@@ -212,7 +218,7 @@ ADD id=20 left=[278,A] right=[169,C]";
         assert_eq!(solve::<1>(EG1A), "CFGNLK");
         assert_eq!(solve::<1>(EG1B), "EVERYBODYCODES");
     }
-    const EG2 : &str = "ADD id=1 left=[10,A] right=[30,H]
+    const EG2: &str = "ADD id=1 left=[10,A] right=[30,H]
 ADD id=2 left=[15,D] right=[25,I]
 ADD id=3 left=[12,F] right=[31,J]
 ADD id=4 left=[5,B] right=[27,L]
@@ -226,7 +232,7 @@ ADD id=7 left=[4,E] right=[21,N]";
         assert_eq!(solve::<2>(EG2), "MGFLNK");
     }
 
-    const EG3A : &str = "ADD id=1 left=[10,A] right=[30,H]
+    const EG3A: &str = "ADD id=1 left=[10,A] right=[30,H]
 ADD id=2 left=[15,D] right=[25,I]
 ADD id=3 left=[12,F] right=[31,J]
 ADD id=4 left=[5,B] right=[27,L]
@@ -236,7 +242,7 @@ SWAP 5
 ADD id=6 left=[20,G] right=[32,K]
 ADD id=7 left=[4,E] right=[21,N]
 SWAP 2";
-    const EG3B : &str = "ADD id=1 left=[10,A] right=[30,H]
+    const EG3B: &str = "ADD id=1 left=[10,A] right=[30,H]
 ADD id=2 left=[15,D] right=[25,I]
 ADD id=3 left=[12,F] right=[31,J]
 ADD id=4 left=[5,B] right=[27,L]
@@ -255,7 +261,7 @@ SWAP 5";
     fn p3_example_b() {
         assert_eq!(solve::<3>(EG3B), "DJCGL");
     }
-    
+
     #[test]
     fn correct_answers() {
         assert_eq!(solve::<1>(P1_INPUT), "QUACK!JGVJZYXZ");

@@ -20,7 +20,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
         |&(x, y, _)| {
             // println!("Doing {x} {y}");
             let Some(next_wall_ix) = columns.iter().position(|w| w[0] > x) else {
-                return vec![((x,y, true),0)]
+                return vec![((x, y, true), 0)];
             };
             // let at_wall = columns[next_wall_ix][0] == x;
             let next_wall_x = columns[next_wall_ix][0];
@@ -31,21 +31,24 @@ fn solve<const PART: usize>(input: &str) -> usize {
                 &columns[next_wall_ix..]
             };
             if next_walls.is_empty() {
-                return vec![((x+1,y-1, false),0)]
+                return vec![((x + 1, y - 1, false), 0)];
             }
             let dist_to_next_wall = next_walls[0][0] - x;
             //we're going to teleport to a gap.
-            let min_y = (y-dist_to_next_wall).max(0);
-            (min_y..=y+dist_to_next_wall).filter(|&target_y| {
-                target_y % 2 == next_wall_x % 2 && //check we're on the allowed checker-board pattern.
+            let min_y = (y - dist_to_next_wall).max(0);
+            (min_y..=y + dist_to_next_wall)
+                .filter(|&target_y| {
+                    target_y % 2 == next_wall_x % 2 && //check we're on the allowed checker-board pattern.
                 next_walls.iter().any(|w| target_y >= w[1] && target_y < w[1] + w[2]) //check we haven't crashed.
-            }).map(|new_y| {
-                let min_y = y-dist_to_next_wall;
-                let flight_cost = (new_y - min_y)/2;
-                ((next_walls[0][0], new_y, false),flight_cost as usize)
-            }).collect::<Vec<_>>()
+                })
+                .map(|new_y| {
+                    let min_y = y - dist_to_next_wall;
+                    let flight_cost = (new_y - min_y) / 2;
+                    ((next_walls[0][0], new_y, false), flight_cost as usize)
+                })
+                .collect::<Vec<_>>()
         },
-        |(_, _, done)| *done
+        |(_, _, done)| *done,
     );
     path.unwrap().1
 }

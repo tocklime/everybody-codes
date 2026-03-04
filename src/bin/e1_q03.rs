@@ -48,7 +48,10 @@ fn parse_snails(input: &str) -> Vec<Snail> {
         .collect()
 }
 fn find_alignment(snails: &[Snail]) -> i64 {
-    let conv = snails.iter().map(|s| (s.period_len - s.position - 1, s.period_len)).collect::<Vec<_>>();
+    let conv = snails
+        .iter()
+        .map(|s| (s.period_len - s.position - 1, s.period_len))
+        .collect::<Vec<_>>();
     chinese_remainder_theorem(&conv)
 }
 fn solve<const PART: usize>(input: &str) -> i64 {

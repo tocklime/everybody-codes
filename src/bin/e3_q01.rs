@@ -61,14 +61,19 @@ fn generate(input: &str) -> Vec<Scale> {
 fn p1(input: &str) -> usize {
     generate(input)
         .into_iter()
-        .map(|s| s.main_col_ix().and_then(|x| (x == 1).then_some(s.id)).unwrap_or_default())
+        .map(|s| {
+            s.main_col_ix()
+                .and_then(|x| (x == 1).then_some(s.id))
+                .unwrap_or_default()
+        })
         .sum()
 }
 fn p2(input: &str) -> usize {
     generate(input)
         .iter()
         .max_by_key(|x| (x.shininess, Reverse(x.brightness())))
-        .unwrap().id
+        .unwrap()
+        .id
 }
 fn p3(input: &str) -> usize {
     let mut grouped: BTreeMap<(usize, bool), Vec<usize>> = BTreeMap::new();
@@ -77,7 +82,12 @@ fn p3(input: &str) -> usize {
             grouped.entry((ix, shiny)).or_default().push(s.id);
         }
     }
-    grouped.into_values().max_by_key(Vec::len).unwrap().iter().sum()
+    grouped
+        .into_values()
+        .max_by_key(Vec::len)
+        .unwrap()
+        .iter()
+        .sum()
 }
 
 #[cfg(test)]

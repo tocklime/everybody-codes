@@ -78,9 +78,9 @@ fn solve<const PART: usize>(input: &str) -> u64 {
         1 => eni,
         2 => eni5,
         3 => eni_sum,
-        _ => unimplemented!()
+        _ => unimplemented!(),
     };
-    
+
     input
         .lines()
         .map(|l| {

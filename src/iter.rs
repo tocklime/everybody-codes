@@ -33,7 +33,7 @@ where
     I: Iterator<Item = T>,
     T: std::fmt::Debug,
     N: Num + TryInto<usize>,
-    <N as TryInto<usize>>::Error : std::fmt::Debug
+    <N as TryInto<usize>>::Error: std::fmt::Debug,
 {
     let first = iterator.next()?;
     if index.is_zero() {
@@ -47,11 +47,11 @@ where
         }
         if last == first {
             //cycled after i iterations.
-            let to_step : usize = (index % current_ix).try_into().unwrap();
+            let to_step: usize = (index % current_ix).try_into().unwrap();
             if to_step == 0 {
                 return Some(last);
             } else {
-                return iterator.nth(to_step-1);
+                return iterator.nth(to_step - 1);
             }
         }
         current_ix = current_ix + N::one();
@@ -112,8 +112,8 @@ pub unsafe fn slice_get_mut_two_unchecked<T>(
     index1: usize,
 ) -> (&mut T, &mut T) {
     let ptr = slice.as_mut_ptr();
-    let one = unsafe {&mut *ptr.add(index0)};
-    let two = unsafe {&mut *ptr.add(index1)};
+    let one = unsafe { &mut *ptr.add(index0) };
+    let two = unsafe { &mut *ptr.add(index1) };
     (one, two)
 }
 

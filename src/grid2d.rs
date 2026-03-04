@@ -1,5 +1,9 @@
 use std::{
-    borrow::Borrow, convert::Into, fmt::{Debug, Display, Write}, iter, ops::{Index, IndexMut}
+    borrow::Borrow,
+    convert::Into,
+    fmt::{Debug, Display, Write},
+    iter,
+    ops::{Index, IndexMut},
 };
 
 use itertools::Itertools;
@@ -113,7 +117,7 @@ impl<T: PartialEq> Grid2d<T> {
     pub fn find_elem(&self, elem: &T) -> Option<Coord> {
         self.indexed_iter().find(|e| e.1 == elem).map(|x| x.0)
     }
-    pub fn count_elem<E : Borrow<T>>(&self, elem: E) -> usize {
+    pub fn count_elem<E: Borrow<T>>(&self, elem: E) -> usize {
         self.iter().filter(|x| *x == elem.borrow()).count()
     }
 }
@@ -229,7 +233,7 @@ impl<T> Grid2d<T> {
         [
             (p.y.wrapping_sub(1), p.x + 1),             //UR
             (p.y + 1, p.x + 1),                         //DR
-            (p.y, p.x), //self
+            (p.y, p.x),                                 //self
             (p.y + 1, p.x.wrapping_sub(1)),             //DL
             (p.y.wrapping_sub(1), p.x.wrapping_sub(1)), //UL
         ]
@@ -266,10 +270,10 @@ impl<T> Grid2d<T> {
     pub fn neighbours(&'_ self, p: Coord) -> impl Iterator<Item = Coord> + use<T> {
         let s = self.dim();
         [
-            (p.y.wrapping_sub(1), p.x),//Down
-            (p.y, p.x.wrapping_sub(1)),//Left
-            (p.y + 1, p.x),//Up
-            (p.y, p.x + 1),//Right
+            (p.y.wrapping_sub(1), p.x), //Down
+            (p.y, p.x.wrapping_sub(1)), //Left
+            (p.y + 1, p.x),             //Up
+            (p.y, p.x + 1),             //Right
         ]
         .map(Into::into)
         .into_iter()
@@ -278,11 +282,11 @@ impl<T> Grid2d<T> {
     pub fn neighbours_with_self(&'_ self, p: Coord) -> impl Iterator<Item = Coord> {
         let s = self.dim();
         [
-            (p.y.wrapping_sub(1), p.x),//Down
-            (p.y, p.x.wrapping_sub(1)),//Left
-            (p.y, p.x), //self
-            (p.y + 1, p.x),//Up
-            (p.y, p.x + 1),//Right
+            (p.y.wrapping_sub(1), p.x), //Down
+            (p.y, p.x.wrapping_sub(1)), //Left
+            (p.y, p.x),                 //self
+            (p.y + 1, p.x),             //Up
+            (p.y, p.x + 1),             //Right
         ]
         .map(Into::into)
         .into_iter()

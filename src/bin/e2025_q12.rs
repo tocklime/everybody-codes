@@ -24,7 +24,7 @@ fn set_fire(g: &Grid2d<u8>, starts: Vec<Point<usize>>, alight: &mut Grid2d<bool>
 fn find_best(g: &Grid2d<u8>, already_alight: &Grid2d<bool>) -> (Point<usize>, Grid2d<bool>) {
     let (_count, alight, point) = g
         .indexes()
-        .filter(|&p| { 
+        .filter(|&p| {
             //only consider those that are bigger than all their (unlit) neighbours.
             g.neighbours(p).all(|x| already_alight[x] || g[x] <= g[p])
         })

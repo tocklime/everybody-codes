@@ -99,9 +99,10 @@ fn place_character(
         .collect_vec();
 
     if row_qs.iter().all(|x| x.1 != value)
-        && let Some(p) = row_qs.iter().find(|x| x.1 == '?') {
-            grid[p.0] = value;
-        }
+        && let Some(p) = row_qs.iter().find(|x| x.1 == '?')
+    {
+        grid[p.0] = value;
+    }
     let col_qs = grid
         .values_in_direction(
             word_base + P::new(cell_relative_position.x, 0),
@@ -111,9 +112,10 @@ fn place_character(
         .map(|x| (x.0, *x.1))
         .collect_vec();
     if col_qs.iter().all(|x| x.1 != value)
-        && let Some(p) = col_qs.iter().find(|x| x.1 == '?') {
-            grid[p.0] = value;
-        }
+        && let Some(p) = col_qs.iter().find(|x| x.1 == '?')
+    {
+        grid[p.0] = value;
+    }
     grid[word_base + cell_relative_position] = value;
 }
 fn try_solve_at(grid: &mut Grid2d<char>, base: Point<usize>) -> bool {

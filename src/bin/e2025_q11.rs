@@ -14,16 +14,16 @@ fn main() {
 fn do_step(flock: &mut [usize], c: Ordering) -> usize {
     let mut any_move = 0;
     for ix in 0..flock.len() - 1 {
-        if flock[ix].cmp(&flock[ix+1]) == c {
+        if flock[ix].cmp(&flock[ix + 1]) == c {
             match c {
                 Ordering::Greater => {
                     flock[ix].dec();
-                    flock[ix+1].inc();
+                    flock[ix + 1].inc();
                 }
                 Ordering::Less => {
-                    flock[ix+1].dec();
+                    flock[ix + 1].dec();
                     flock[ix].inc();
-                },
+                }
                 Ordering::Equal => panic!(),
             }
             any_move.inc();
@@ -32,7 +32,7 @@ fn do_step(flock: &mut [usize], c: Ordering) -> usize {
     any_move
 }
 fn solve<const PART: usize>(input: &str) -> usize {
-    let mut flock : Vec<usize> = input.lines().map(|x| x.parse().unwrap()).collect();
+    let mut flock: Vec<usize> = input.lines().map(|x| x.parse().unwrap()).collect();
     let mut step = 1;
     for round in 0.. {
         if step == 1 && do_step(&mut flock, Ordering::Greater) == 0 {
@@ -50,7 +50,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
             do_step(&mut flock, Ordering::Less);
         }
         if PART == 1 && round == 9 {
-            return flock.iter().zip(1..).map(|(count, ix)| count * ix).sum()
+            return flock.iter().zip(1..).map(|(count, ix)| count * ix).sum();
         }
     }
     unreachable!()

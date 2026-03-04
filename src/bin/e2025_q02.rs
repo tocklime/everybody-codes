@@ -1,7 +1,7 @@
 use std::ops::{Add, Div, Mul};
 
 use itertools::Itertools;
-use nom::{bytes::complete::tag, character::complete::i64, Parser};
+use nom::{Parser, bytes::complete::tag, character::complete::i64};
 
 const P1_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q02_p1.txt");
 const P2_INPUT: &str = include_str!("../../inputs/everybody_codes_e2025_q02_p2.txt");
@@ -30,8 +30,8 @@ impl ComplexNum {
     fn parse<'a>() -> impl Parser<&'a str, Output = Self, Error = nom::error::Error<&'a str>> {
         (tag("["), i64, tag(","), i64, tag("]")).map(|(_, x, _, y, _)| Self { x, y })
     }
-    fn parse_line<'a>(
-    ) -> impl Parser<&'a str, Output = (String, Self), Error = nom::error::Error<&'a str>> {
+    fn parse_line<'a>()
+    -> impl Parser<&'a str, Output = (String, Self), Error = nom::error::Error<&'a str>> {
         (nom::character::complete::alpha1, tag("="), Self::parse())
             .map(|(c, _, cn)| (c.to_string(), cn))
     }

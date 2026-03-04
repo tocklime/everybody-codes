@@ -12,13 +12,12 @@ fn main() {
     println!("P2: {}", solve::<2>(P2_INPUT));
     println!("P3: {}", solve::<3>(P3_INPUT));
 }
-fn compare<A: Iterator<Item=char>,B : Iterator<Item=char>>(child: A, parent: B) -> u128 {
+fn compare<A: Iterator<Item = char>, B: Iterator<Item = char>>(child: A, parent: B) -> u128 {
     let mut same_ixs = 0;
     for ((ix, c), p) in child.enumerate().zip(parent) {
         same_ixs.set_bit(ix.try_into().unwrap(), c == p);
-
     }
-    same_ixs 
+    same_ixs
 }
 fn solve<const PART: usize>(input: &str) -> usize {
     let ls = input.lines().collect_vec();
@@ -41,17 +40,26 @@ fn solve<const PART: usize>(input: &str) -> usize {
         2 => {
             // let mut matches = HashMap::new();
             let len = ls[0][2..].len();
-            let max_match = if len == 128 { u128::MAX } else {(1<<len) - 1};
+            let max_match = if len == 128 {
+                u128::MAX
+            } else {
+                (1 << len) - 1
+            };
             let mut total = 0;
             for child_ix in 0..ls.len() {
                 let mut this_child_matches = HashMap::<usize, u128>::new();
-                
+
                 for parent_ix in 0..ls.len() {
                     if child_ix == parent_ix {
                         continue;
                     }
-                    let same = compare(ls[child_ix].split_once(':').unwrap().1.chars(), ls[parent_ix].split_once(':').unwrap().1.chars());
-                    let other_p = this_child_matches.iter().find(|&(_,v)| v | same == max_match);
+                    let same = compare(
+                        ls[child_ix].split_once(':').unwrap().1.chars(),
+                        ls[parent_ix].split_once(':').unwrap().1.chars(),
+                    );
+                    let other_p = this_child_matches
+                        .iter()
+                        .find(|&(_, v)| v | same == max_match);
                     if let Some(other_p) = other_p {
                         //found parent.
                         total += (same.count_ones() * other_p.1.count_ones()) as usize;
@@ -65,11 +73,15 @@ fn solve<const PART: usize>(input: &str) -> usize {
         }
         3 => {
             let len = ls[0][2..].len();
-            let max_match = if len == 128 { u128::MAX } else {(1<<len) - 1};
+            let max_match = if len == 128 {
+                u128::MAX
+            } else {
+                (1 << len) - 1
+            };
             let mut connections = Vec::new();
             for child_ix in 0..ls.len() {
                 let mut this_child_matches = HashMap::new();
-                
+
                 for parent_ix in 0..ls.len() {
                     if child_ix == parent_ix {
                         continue;
@@ -77,15 +89,17 @@ fn solve<const PART: usize>(input: &str) -> usize {
                     let (cname, cdna) = ls[child_ix].split_once(':').unwrap();
                     let (pname, pdna) = ls[parent_ix].split_once(':').unwrap();
                     let same = compare(cdna.chars(), pdna.chars());
-                    let other_p = this_child_matches.iter().find(|&(k,v)| v | same == max_match && k != &child_ix);
+                    let other_p = this_child_matches
+                        .iter()
+                        .find(|&(k, v)| v | same == max_match && k != &child_ix);
                     if let Some((&other_p_ix, _)) = other_p {
                         //found parent.
                         let cid: u32 = cname.parse().unwrap();
                         let pid: u32 = pname.parse().unwrap();
 
-                        let op : &str = ls[other_p_ix];
+                        let op: &str = ls[other_p_ix];
                         let opid: u32 = op.split_once(':').unwrap().0.parse::<u32>().unwrap();
-                        connections.push(vec![cid,pid,opid]);
+                        connections.push(vec![cid, pid, opid]);
                         // dbg!(cid, pid, opid);
                         break;
                     }
@@ -93,10 +107,13 @@ fn solve<const PART: usize>(input: &str) -> usize {
                 }
             }
             let x = pathfinding::prelude::separate_components(&connections);
-            let lu = x.0.iter().map(|(&&elem, &set)| (set,elem)).collect_lookup();
+            let lu =
+                x.0.iter()
+                    .map(|(&&elem, &set)| (set, elem))
+                    .collect_lookup();
             lu.values().map(|x| x.iter().sum::<u32>()).max().unwrap() as usize
         }
-        _ => unimplemented!()
+        _ => unimplemented!(),
     }
 }
 

@@ -47,14 +47,14 @@ fn solve_circle<const REPS: u32>(input: &str) -> usize {
                 balloons_b.pop_front();
                 //they are still balanced.
             } else {
-                // pop 1. then they are unbalanced. 
+                // pop 1. then they are unbalanced.
                 balloons_a.pop_front();
             }
         } else {
             //they are unbalanced.
             balloons_a.pop_front();
         }
-        while balloons_a.len() + 1 < balloons_b.len()  {
+        while balloons_a.len() + 1 < balloons_b.len() {
             //rebalance
             balloons_a.push_back(balloons_b.pop_front().unwrap());
         }

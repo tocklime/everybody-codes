@@ -1,10 +1,9 @@
 use crate::aabb::Aabb;
 use ndarray::IntoDimension;
 use num::{
-    abs,
+    Integer, Num, Signed, Unsigned, abs,
     integer::gcd,
     traits::{WrappingAdd, WrappingSub},
-    Integer, Num, Signed, Unsigned,
 };
 use std::ops::{Add, AddAssign, Mul, RangeInclusive, Sub};
 use std::{collections::HashMap, fmt::Display};
@@ -524,9 +523,5 @@ where
                 })
                 .collect::<String>()
     });
-    if flip {
-        x.rev().collect()
-    } else {
-        x.collect()
-    }
+    if flip { x.rev().collect() } else { x.collect() }
 }

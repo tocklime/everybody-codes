@@ -51,19 +51,24 @@ fn score_drop(grid: &Grid2d<char>, rules: &str, toss_slot: usize) -> usize {
     (last_slot * 2).saturating_sub(toss_slot)
 }
 
-fn find_unique_set(grid: &[Vec<usize>], conv: impl Fn(usize)->usize) -> usize {
-    let p = pathfinding::directed::dijkstra::dijkstra(&(0,0u32), |(_, used)| {
-        //have made y choices, have used the slots in `used`.
-        let y = used.count_ones() as usize;
-        let mut choices = Vec::new();
-        for (pos, x) in grid[y].iter().enumerate() {
-            let as_bit = 1 << pos;
-            if as_bit & used == 0 {
-                choices.push(((*x, used | as_bit), conv(*x)))
+fn find_unique_set(grid: &[Vec<usize>], conv: impl Fn(usize) -> usize) -> usize {
+    let p = pathfinding::directed::dijkstra::dijkstra(
+        &(0, 0u32),
+        |(_, used)| {
+            //have made y choices, have used the slots in `used`.
+            let y = used.count_ones() as usize;
+            let mut choices = Vec::new();
+            for (pos, x) in grid[y].iter().enumerate() {
+                let as_bit = 1 << pos;
+                if as_bit & used == 0 {
+                    choices.push(((*x, used | as_bit), conv(*x)))
+                }
             }
-        }
-        choices
-    }, |x| x.1.count() == grid.len()).unwrap();
+            choices
+        },
+        |x| x.1.count() == grid.len(),
+    )
+    .unwrap();
     p.0.iter().map(|x| x.0).sum()
 }
 
@@ -73,7 +78,9 @@ fn solve3(input: &str) -> String {
     let slot_count = grid.dim().x.div_ceil(2);
     let mut ans_grid = Vec::new();
     for rules in instrs.lines() {
-        let all= (1..=slot_count).map(|x| score_drop(&grid, rules, x)).collect::<Vec<_>>();
+        let all = (1..=slot_count)
+            .map(|x| score_drop(&grid, rules, x))
+            .collect::<Vec<_>>();
         ans_grid.push(all);
     }
     assert_eq!(ans_grid.len(), 6);

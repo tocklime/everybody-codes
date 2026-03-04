@@ -57,7 +57,5 @@ fn main() {
                 .unwrap();
             println!("Exit status: {res:?}");
         }
-
     }
-
 }

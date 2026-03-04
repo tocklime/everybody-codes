@@ -28,24 +28,22 @@ fn solve<const PART: usize>(input: &str) -> String {
                 }
                 _ => unreachable!(),
             },
-            "L" => {
-                match PART {
-                    1 => {
-                        pos = pos.saturating_sub(n);
-                    }
-                    2 => {
-                        if pos < n {
-                            pos = (pos + names.len() - n) % names.len();
-                        } else {
-                            pos -= n;
-                        }
-                    }
-                    3 => {
-                        names.swap(0, (names_len - (n % names_len)) % names_len);
-                    }
-                    _ => unreachable!(),
+            "L" => match PART {
+                1 => {
+                    pos = pos.saturating_sub(n);
                 }
-            }
+                2 => {
+                    if pos < n {
+                        pos = (pos + names.len() - n) % names.len();
+                    } else {
+                        pos -= n;
+                    }
+                }
+                3 => {
+                    names.swap(0, (names_len - (n % names_len)) % names_len);
+                }
+                _ => unreachable!(),
+            },
             _ => unreachable!(),
         };
     }
