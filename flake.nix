@@ -1,37 +1,43 @@
 {
-  description = "A devShell example";
-
   inputs = {
-    nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    flake-utils.url  = "github:numtide/flake-utils";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, rust-overlay, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        overlays = [ (import rust-overlay) ];
-        pkgs = import nixpkgs {
-          inherit system overlays;
+  outputs = { self, nixpkgs, fenix }@inputs:
+    let
+      pkgs = nixpkgs.legacyPackages."x86_64-linux";
+      fenixLib = fenix.packages."x86_64-linux";
+      rustToolchain = fenixLib.stable.withComponents [ "clippy" "rustc" "cargo" "rust-src" "rustfmt" "rust-analyzer" ];
+      neovim = (pkgs.neovim.override {
+        configure = {
+          packages.myVimPackage = with pkgs.vimPlugins; {
+            start = [
+              (pkgs.vimPlugins.nvim-treesitter.withPlugins
+                (p: [ p.rust p.lua p.toml ]))
+              nvim-lspconfig
+              nvim-cmp
+              cmp-nvim-lsp
+              telescope-nvim
+              plenary-nvim
+            ];
+          };
+          customRC = "  set runtimepath^=${./nvim}\n  set packpath^=${
+                ./nvim
+              }\n  lua require(\"dev\").setup()\n";
         };
-      in
-      with pkgs;
-      {
-        devShells.default = mkShell {
-          buildInputs = [
-            openssl
-            pkg-config
-            eza
-            fd
-            (rust-bin.beta.latest.default.override {
-              extensions = ["rust-src"];
-            })
-            bacon
-            hyperfine
-            cargo-flamegraph
-            bashInteractive
-          ];
-        };
-      }
-    );
+      });
+    in {
+      devShells."x86_64-linux".default = pkgs.mkShell {
+        buildInputs =
+          [ rustToolchain pkgs.bacon neovim pkgs.openssl pkgs.pkg-config pkgs.sqlite pkgs.sqlitebrowser pkgs.google-cloud-sdk pkgs.cargo-udeps ];
+        shellHook = ''
+          export LD_LIBRARY_PATH=${pkgs.openssl.out}/lib:$LD_LIBRARY_PATH
+        '';
+      };
+
+    };
 }
