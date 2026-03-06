@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 
-use itertools::Itertools;
 use nom::{
     Parser,
     bytes::complete::{tag, take_until},
@@ -147,20 +146,6 @@ impl Node {
 }
 #[derive(Debug)]
 struct AllNodes(Vec<Node>);
-enum Dir {
-    PreLeft,
-    PreRight,
-    Next,
-}
-impl Dir {
-    fn from_pos(p: Position) -> Self {
-        match p {
-            Position::Left => Self::PreRight,
-            Position::Right => Self::Next,
-        }
-
-    }
-}
 impl AllNodes {
     fn route_around(&self) -> VecDeque<(usize, Position)> {
         let init = (0, Position::Left);
@@ -269,7 +254,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
                             (all_nodes.0[replaced_pos].right.unwrap().1, None)
                         }
                     };
-                    println!("Replaced node id {u}, will start next search from {next:?}");
+                    // println!("Replaced node id {u}, will start next search from {next:?}");
                     // println!("{all_nodes:?}");
                     to_place = Some((next.0, u, next.1));
                 }
@@ -289,7 +274,6 @@ fn solve<const PART: usize>(input: &str) -> usize {
             }
         }
     }
-    // println!("{:?}", all_nodes.walk().collect_vec());
     all_nodes.walk().zip(1..).map(|(n, m)| (n + 1) * m).sum()
 }
 
@@ -338,10 +322,10 @@ id=6, plug=BLUE TRIANGLE, leftSocket=GREEN CIRCLE, rightSocket=RED CIRCLE, data=
         assert_eq!(solve::<3>(EG3A), 60);
     }
 
-    // #[test]
-    // fn correct_answers() {
-    //     assert_eq!(solve::<1>(P1_INPUT), 0);
-    //     assert_eq!(solve::<2>(P2_INPUT), 0);
-    //     assert_eq!(solve::<3>(P3_INPUT), 0);
-    // }
+    #[test]
+    fn correct_answers() {
+        assert_eq!(solve::<1>(P1_INPUT), 6628);
+        assert_eq!(solve::<2>(P2_INPUT), 320436);
+        assert_eq!(solve::<3>(P3_INPUT), 426693);
+    }
 }
